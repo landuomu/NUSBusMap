@@ -8,6 +8,9 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 
+using Xamarin.Forms;
+using Xamarin.Forms.Maps;
+
 namespace NUSBusMap.Droid
 {
 	[Activity (Label = "NUSBusMap.Droid", Icon = "@drawable/icon", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
@@ -19,7 +22,7 @@ namespace NUSBusMap.Droid
 
 			global::Xamarin.Forms.Forms.Init (this, bundle);
 
-			Xamarin.FormsMaps.Init();
+			Xamarin.FormsMaps.Init (this, bundle);
 
 			LoadApplication (new App ());
 		}
