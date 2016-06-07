@@ -9,7 +9,7 @@ namespace NUSBusMap
 		public double latitude { get; set; }
 		public double longitude { get; set; }
 		public string name { get; set; }
-		public List<BusSvc> services { get; set; }
+		public List<string> services { get; set; }
 	}
 }
 

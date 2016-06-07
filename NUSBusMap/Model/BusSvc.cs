@@ -6,7 +6,7 @@ namespace NUSBusMap
 	public class BusSvc
 	{
 		public string routeNo { get; set; }
-		public List<BusStop> stops { get; set; }
+		public List<int> stops { get; set; }
 	}
 }
 
