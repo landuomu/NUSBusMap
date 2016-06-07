@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
@@ -6,9 +7,11 @@ using Xamarin.Forms.Maps;
 namespace NUSBusMap
 {
 	public class MapPage : ContentPage {
+		public Map map;
+
 	    public MapPage() {
 	    	// map with default centre at NUS
-	        var map = new Map(
+	        map = new Map(
 	            MapSpan.FromCenterAndRadius(
 	                    new Position(1.2966,103.7764), Distance.FromKilometers(0.5))) {
 	                IsShowingUser = true,
@@ -18,19 +21,19 @@ namespace NUSBusMap
 	            };
 
 	        // pins for bus stops
-			// var position = new Position(37,-122); // Latitude, Longitude
 			// testing list of bus stops
-			List<Position> busStops = new List<Position>() {
-				new Position (1.29630305719228, 103.78341318580553), // NUH
-				new Position (1.293383, 103.784394) // Kent Ridge MRT Station
-			};
-			// busStops.Add(new Position (1.29630305719228, 103.78341318580553));
-			foreach (Position position in busStops) {
-				// var position = new Position (1.29630305719228, 103.78341318580553);
+//			List<Position> busStops = new List<Position>() {
+//				new Position (1.29630305719228, 103.78341318580553), // NUH
+//				new Position (1.293383, 103.784394) // Kent Ridge MRT Station
+//			};
+
+			var busStops = JsonLoader.LoadStops ();
+
+			foreach (BusStop busStop in busStops) {
 				var pin = new Pin {
 				            Type = PinType.Place,
-				            Position = position,
-				            Label = "Bus stop name - Bus stop code",
+				            Position = new Position(busStop.latitude, busStop.longitude),
+				            Label = busStop.name + " - " + busStop.busStopCode,
 							Address = "Bus service - Bus arrival timings"
 				        };
 				map.Pins.Add(pin);

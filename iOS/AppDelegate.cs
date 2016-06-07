@@ -12,6 +12,8 @@ namespace NUSBusMap.iOS
 	{
 		public override bool FinishedLaunching (UIApplication app, NSDictionary options)
 		{
+			JsonLoader.Loader = new StreamLoader ();
+
 			global::Xamarin.Forms.Forms.Init ();
 
 			Xamarin.FormsMaps.Init();
