@@ -15,26 +15,25 @@ using XLabs.Platform.Services.Geolocation;
 namespace NUSBusMap
 {
 	public class MapPage : ContentPage {
-		public Map map;
+		private Map map;
+		private const double DEFAULT_RADIUS = 0.5;
 
 	    public MapPage() {
 	    	// map with default centre at NUS
+			var NUSCenter = new Xamarin.Forms.Maps.Position (1.2966, 103.7764);
 	        map = new Map(
-	            MapSpan.FromCenterAndRadius(
-	                    new Xamarin.Forms.Maps.Position(1.2966,103.7764), Distance.FromKilometers(0.5))) {
+	            MapSpan.FromCenterAndRadius(NUSCenter, Distance.FromKilometers(DEFAULT_RADIUS))) {
 	                IsShowingUser = true,
 	                HeightRequest = 100,
 	                WidthRequest = 960,
 	                VerticalOptions = LayoutOptions.FillAndExpand
 	            };
 
-	        // pins for bus stops
-			// testing list of bus stops
-//			List<Position> busStops = new List<Position>() {
-//				new Position (1.29630305719228, 103.78341318580553), // NUH
-//				new Position (1.293383, 103.784394) // Kent Ridge MRT Station
-//			};
+	        // shift to current location if possible
+			// GetCentre ();
 
+	        // add pins for each bus stops
+	        // bus stops loaded from json
 			var busStops = JsonLoader.LoadStops ();
 
 			foreach (BusStop busStop in busStops) {
@@ -57,22 +56,25 @@ namespace NUSBusMap
 			};
 
 			// temp button to test geolocation
-			Button geoButton = new Button {
-				Text = "Get current location"
-			};
-			geoButton.Clicked += OnGetLocation;
+//			Button geoButton = new Button {
+//				Text = "Get current location"
+//			};
+//			geoButton.Clicked += OnGetLocation;
 
 			// add map and slider to stack layout
 	        var stack = new StackLayout { Spacing = 0 };
 	        stack.Children.Add(map);
 			stack.Children.Add(slider);
-			stack.Children.Add(geoButton);
+			// stack.Children.Add(geoButton);
 
+			Icon = "MapTabIcon.png";
+			Title = "Map";
 	        Content = stack;
 
 	    }
 
-	    private void OnGetLocation (object sender, EventArgs e) {
+	    // private void OnGetLocation (object sender, EventArgs e) {
+		private void GetCentre () {
 			var geolocation = GetCurrentPosition ().ContinueWith(t => {
 	            if (t.IsFaulted)
 	            {
@@ -86,7 +88,7 @@ namespace NUSBusMap
 	            {
 	                var currentLocation = new Xamarin.Forms.Maps.Position (t.Result.Latitude, t.Result.Longitude);
 
-	                map.MoveToRegion(MapSpan.FromCenterAndRadius(currentLocation, Distance.FromKilometers(0.5)));
+	                map.MoveToRegion(MapSpan.FromCenterAndRadius(currentLocation, Distance.FromKilometers(DEFAULT_RADIUS)));
 	            }
 	        }, TaskScheduler.FromCurrentSynchronizationContext ());
 	    }
