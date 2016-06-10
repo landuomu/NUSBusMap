@@ -9,7 +9,7 @@ namespace NUSBusMap
 		public App ()
 		{
 			// The root page of your application
-			MainPage = new MapPage ();
+			MainPage = new NUSBusMap.MainPage ();
 		}
 
 		protected override void OnStart ()

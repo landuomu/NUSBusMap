@@ -24,7 +24,7 @@
     <MtouchUseRefCounting>true</MtouchUseRefCounting>
     <MtouchUseSGen>true</MtouchUseSGen>
     <MtouchDebug>true</MtouchDebug>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Developer: lhchchc@gmail.com (2R4KJSZDMN)</CodesignKey>
     <MtouchFastDev>true</MtouchFastDev>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
@@ -71,6 +71,7 @@
     <DeviceSpecificBuild>true</DeviceSpecificBuild>
     <CodesignKey>iPhone Developer</CodesignKey>
     <MtouchUseSGen>true</MtouchUseSGen>
+    <CodesignProvision>05e47a8f-3fe3-4b9a-9f04-758b3ddc10cd</CodesignProvision>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -131,6 +132,16 @@
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\stops-klaipeda-glossy.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\29x29.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\58x58.jpeg" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\58x58.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\87x87.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\80x80.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\120x120.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\57x57.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\114x114.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\180x180.png" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Resources\LaunchScreen.xib" />
@@ -150,5 +161,7 @@
   <ItemGroup>
     <BundleResource Include="Resources\BusStops.json" />
     <BundleResource Include="Resources\BusSvcs.json" />
+    <BundleResource Include="Resources\BusTabIcon.png" />
+    <BundleResource Include="Resources\MapTabIcon.png" />
   </ItemGroup>
 </Project>
