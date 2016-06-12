@@ -1,0 +1,30 @@
+[
+	{
+		"busStopCode": 18331,
+		"latitude": 1.293694,
+		"longitude": 103.784799,
+		"name": "Kent Ridge MRT",
+		"services": ["A1", "A1E", "D2"]
+	},
+	{
+		"busStopCode": 18301,
+		"latitude": 1.297498,
+		"longitude": 103.781113,
+		"name": "LT29",
+		"services": ["A1", "A1E", "C", "D2"]
+	},
+	{
+		"busStopCode": 18311,
+		"latitude": 1.297156,
+		"longitude": 103.778878,
+		"name": "UHall",
+		"services": ["A1", "C", "D2"]
+	},
+	{
+		"busStopCode": 18321,
+		"latitude": 1.298853,
+		"longitude": 103.775628,
+		"name": "Opp University Health Centre",
+		"services": ["A1", "C", "D2"]
+	}
+]

@@ -96,6 +96,34 @@
     <Reference Include="Xamarin.Forms.Maps">
       <HintPath>..\packages\Xamarin.Forms.Maps.2.2.0.31\lib\MonoAndroid10\Xamarin.Forms.Maps.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="XLabs.Ioc">
+      <HintPath>..\packages\XLabs.IoC.2.0.5782\lib\portable-net45+netcore45+wp8+MonoAndroid1+MonoTouch1\XLabs.Ioc.dll</HintPath>
+    </Reference>
+    <Reference Include="ExifLib">
+      <HintPath>..\packages\ExifLib.PCL.1.0.1\lib\portable-net45+sl50+win+WindowsPhoneApp81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10\ExifLib.dll</HintPath>
+    </Reference>
+    <Reference Include="XLabs.Core">
+      <HintPath>..\packages\XLabs.Core.2.0.5782\lib\portable-net45+netcore45+wp8+MonoAndroid1+MonoTouch1\XLabs.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="XLabs.Platform.Droid">
+      <HintPath>..\packages\XLabs.Platform.2.0.5782\lib\MonoAndroid\XLabs.Platform.Droid.dll</HintPath>
+    </Reference>
+    <Reference Include="XLabs.Platform">
+      <HintPath>..\packages\XLabs.Platform.2.0.5782\lib\MonoAndroid\XLabs.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Android.Export" />
+    <Reference Include="XLabs.Serialization">
+      <HintPath>..\packages\XLabs.Serialization.2.0.5782\lib\portable-net45+netcore45+wp8+MonoAndroid1+MonoTouch1\XLabs.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="XLabs.Forms.Droid">
+      <HintPath>..\packages\XLabs.Forms.2.0.5782\lib\MonoAndroid\XLabs.Forms.Droid.dll</HintPath>
+    </Reference>
+    <Reference Include="XLabs.Forms">
+      <HintPath>..\packages\XLabs.Forms.2.0.5782\lib\MonoAndroid\XLabs.Forms.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NUSBusMap\NUSBusMap.csproj">
@@ -107,6 +135,7 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StreamLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -127,4 +156,8 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets')" />
   <Import Project="..\packages\Xamarin.Forms.2.2.0.31\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.2.0.31\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />
+  <ItemGroup>
+    <AndroidAsset Include="Assets\BusStops.json" />
+    <AndroidAsset Include="Assets\BusSvcs.json" />
+  </ItemGroup>
 </Project>
