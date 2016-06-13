@@ -163,5 +163,6 @@
     <BundleResource Include="Resources\BusSvcs.json" />
     <BundleResource Include="Resources\BusTabIcon.png" />
     <BundleResource Include="Resources\MapTabIcon.png" />
+    <BundleResource Include="Resources\Info.png" />
   </ItemGroup>
 </Project>

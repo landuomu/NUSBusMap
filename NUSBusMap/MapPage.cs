@@ -29,8 +29,8 @@ namespace NUSBusMap
 	                VerticalOptions = LayoutOptions.FillAndExpand
 	            };
 
-	        // shift to current location if possible
-			// GetCentre ();
+	        // shift to current location if possible (activate only for device testing)
+			// ShiftToCurrentLocation ();
 
 	        // add pins for each bus stops
 	        // bus stops loaded from json
@@ -74,7 +74,7 @@ namespace NUSBusMap
 	    }
 
 	    // private void OnGetLocation (object sender, EventArgs e) {
-		private void GetCentre () {
+		private void ShiftToCurrentLocation () {
 			var geolocation = GetCurrentPosition ().ContinueWith(t => {
 	            if (t.IsFaulted)
 	            {
