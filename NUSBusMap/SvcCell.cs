@@ -7,20 +7,16 @@ namespace NUSBusMap
 {
 	public class SvcCell : ViewCell
 	{
-		private BusSvc busSvc;
-
-		public SvcCell (BusSvc bs, EventHandler onToggleSvc, EventHandler onClickInfo)
+		public SvcCell (string svc, EventHandler<ToggledEventArgs> onToggleSvc, EventHandler onClickInfo)
 		{
-			busSvc = bs;
-
 			var stack = new StackLayout {
 				Orientation = StackOrientation.Horizontal,
 				VerticalOptions = LayoutOptions.Center,
-				Padding = new Thickness(10, Device.OnPlatform(20, 0, 0), 10, 5)
+				Padding = new Thickness(10)
 			};
 
 			Label serviceLabel = new Label {
-				Text = busSvc.routeName,
+				Text = svc,
 				TextColor = Color.Blue,
 				HorizontalOptions = LayoutOptions.StartAndExpand,
 				VerticalOptions = LayoutOptions.Center
@@ -28,7 +24,7 @@ namespace NUSBusMap
 
 			Switch switcher = new Switch {
 				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center
+				VerticalOptions = LayoutOptions.Start
 			};
 			switcher.Toggled += onToggleSvc;
 

@@ -7,20 +7,15 @@ namespace NUSBusMap
 {
 	public class SvcPage : ContentPage
 	{
-		public List<BusSvc> busSvcs;
-
 		public SvcPage ()
 		{
-			// load bus services from json
-			busSvcs = (List<BusSvc>) JsonLoader.LoadSvcs ();
-
 			// create table view
 			var view = new TableView () { Intent = TableIntent.Settings };
 			var root = new TableRoot ();
 			var section = new TableSection ();
 			// add each bus service switch and info button
-			foreach (BusSvc busSvc in busSvcs) {
-				section.Add(new SvcCell (busSvc, onToggleSvc, onClickInfo));
+			foreach (BusSvc busSvc in BusHelper.BusSvcs) {
+				section.Add(new SvcCell (busSvc.routeName, onToggleSvc, onClickInfo));
 			}
 			root.Add (section);
 			view.Root = root;
@@ -30,16 +25,14 @@ namespace NUSBusMap
 			Content = view;
 		}
 
-		private void onToggleSvc (object sender, EventArgs e)
+		private void onToggleSvc (object sender, ToggledEventArgs e)
 		{
 			// TODO: show/hide buses of routeName on map
 		}
 
-		private void onClickInfo (object sender, EventArgs e)
+		private async void onClickInfo (object sender, EventArgs e)
 		{
-			// TODO: get list of bus stops of routeName (display service info page)
-			// await Navigation.PushAsync (new SvcInfoPage ());
-			System.Diagnostics.Debug.WriteLine ("Sender: {0}", sender);
+			await Navigation.PushAsync (new SvcInfoPage ());
 		}
 	}
 }
