@@ -26,7 +26,6 @@ namespace NUSBusMap.Droid
 		
 		public static void UpdateIdValues()
 		{
-			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::NUSBusMap.Droid.Resource.Attribute.actionBarSize;
 			global::XLabs.Platform.Resource.String.ApplicationName = global::NUSBusMap.Droid.Resource.String.ApplicationName;
 			global::XLabs.Platform.Resource.String.Hello = global::NUSBusMap.Droid.Resource.String.Hello;
 			global::XLabs.Forms.Resource.Animation.abc_fade_in = global::NUSBusMap.Droid.Resource.Animation.abc_fade_in;
@@ -1604,6 +1603,7 @@ namespace NUSBusMap.Droid
 			global::XLabs.Forms.Resource.Styleable.ViewStubCompat_android_id = global::NUSBusMap.Droid.Resource.Styleable.ViewStubCompat_android_id;
 			global::XLabs.Forms.Resource.Styleable.ViewStubCompat_android_inflatedId = global::NUSBusMap.Droid.Resource.Styleable.ViewStubCompat_android_inflatedId;
 			global::XLabs.Forms.Resource.Styleable.ViewStubCompat_android_layout = global::NUSBusMap.Droid.Resource.Styleable.ViewStubCompat_android_layout;
+			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::NUSBusMap.Droid.Resource.Attribute.actionBarSize;
 		}
 		
 		public partial class Animation

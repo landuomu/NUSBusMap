@@ -13,13 +13,13 @@ namespace NUSBusMap
 		{
 			BusStops = JsonLoader.LoadStops();
 			BusSvcs = JsonLoader.LoadSvcs();
-			ActiveBuses = new List<BusOnRoad> ();
+			ActiveBuses = new Dictionary<string,BusOnRoad> ();
 		}
 
 		// TODO: helper methods to extract specific bus data
 
 		// add bus when bus starts to ply on road
-		public static bool AddBusOnRoad (string vehiclePlate, string routeName) {
+		public static void AddBusOnRoad (string vehiclePlate, string routeName) {
 			var svc = BusSvcs[routeName];
 			var stopEnum = svc.stops.GetEnumerator();
 			stopEnum.MoveNext ();
@@ -34,7 +34,7 @@ namespace NUSBusMap
 				latitude = BusStops[svc.firstStop].latitude,
 				longitude = BusStops[svc.firstStop].longitude
 			};
-			return ActiveBuses.Add (vehiclePlate, bus);
+			ActiveBuses.Add (vehiclePlate, bus);
 		}
 
 		public static bool RemoveBusOnRoad (string vehiclePlate) {
