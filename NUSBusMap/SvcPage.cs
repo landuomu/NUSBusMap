@@ -14,8 +14,8 @@ namespace NUSBusMap
 			var root = new TableRoot ();
 			var section = new TableSection ();
 			// add each bus service switch and info button
-			foreach (BusSvc busSvc in BusHelper.BusSvcs) {
-				section.Add(new SvcCell (busSvc.routeName, onToggleSvc, onClickInfo));
+			foreach (string routeName in BusHelper.BusSvcs.Keys) {
+				section.Add(new SvcCell (routeName, onToggleSvc, onClickInfo));
 			}
 			root.Add (section);
 			view.Root = root;
@@ -23,6 +23,7 @@ namespace NUSBusMap
 			Icon = "BusTabIcon.png";
 			Title = "Bus Services";
 			Content = view;
+			// test
 		}
 
 		private void onToggleSvc (object sender, ToggledEventArgs e)

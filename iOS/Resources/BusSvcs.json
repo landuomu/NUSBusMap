@@ -1,26 +1,26 @@
-[
-	{
+{
+	"A1": {
 		"routeName": "A1",
 		"firstBusTime": ["0715", "0715", "0900"],
 		"lastBusTime": ["2300", "2300", "2300"],
 		"stops": [18331, 18301, 18311, 18321]
 	},
-	{
+	"A1E": {
 		"routeName": "A1E",
 		"firstBusTime": ["0730", "0730"],
 		"lastBusTime": ["0900", "0900"],
 		"stops": [18331, 18301]
 	},
-	{
+	"C": {
 		"routeName": "C",
 		"firstBusTime": ["0715", "0715"],
 		"lastBusTime": ["2300", "1900"],
 		"stops": [18301, 18311, 18321]
 	},
-	{
+	"D1": {
 		"routeName": "D1",
 		"firstBusTime": ["0715", "0715", "0900"],
 		"lastBusTime": ["2300", "2300", "2300"],
 		"stops": [18331, 18301, 18311, 18321]
 	}
-]
+}

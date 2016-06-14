@@ -5,16 +5,18 @@ namespace NUSBusMap
 {
 	public static class BusHelper
 	{
-		public static List<BusStop> BusStops;
-		public static List<BusSvc> BusSvcs;
+		public static Dictionary<int,BusStop> BusStops;
+		public static Dictionary<string,BusSvc> BusSvcs;
 
 		public static void LoadBusData ()
 		{
-			BusStops = (List<BusStop>) JsonLoader.LoadStops();
-			BusSvcs = (List<BusSvc>) JsonLoader.LoadSvcs();
+			BusStops = JsonLoader.LoadStops();
+			BusSvcs = JsonLoader.LoadSvcs();
 		}
 
 		// TODO: helper methods to extract specific bus data
+
+
 	}
 }
 

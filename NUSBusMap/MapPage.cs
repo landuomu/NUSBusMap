@@ -33,7 +33,7 @@ namespace NUSBusMap
 			// ShiftToCurrentLocation ();
 
 	        // add pins for each bus stops
-	        foreach (BusStop busStop in BusHelper.BusStops) {
+	        foreach (BusStop busStop in BusHelper.BusStops.Values) {
 				var pin = new Pin {
 				            Type = PinType.Place,
 							Position = new Xamarin.Forms.Maps.Position(busStop.latitude, busStop.longitude),
