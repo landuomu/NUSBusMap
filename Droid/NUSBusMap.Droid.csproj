@@ -160,4 +160,9 @@
     <AndroidAsset Include="Assets\BusStops.json" />
     <AndroidAsset Include="Assets\BusSvcs.json" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\drawable\BusTabIcon.png" />
+    <BundleResource Include="Resources\drawable\Info.png" />
+    <BundleResource Include="Resources\drawable\MapTabIcon.png" />
+  </ItemGroup>
 </Project>

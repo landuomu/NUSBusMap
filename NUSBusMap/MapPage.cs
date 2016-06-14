@@ -29,14 +29,11 @@ namespace NUSBusMap
 	                VerticalOptions = LayoutOptions.FillAndExpand
 	            };
 
-	        // shift to current location if possible
-			// GetCentre ();
+	        // shift to current location if possible (activate only for device testing)
+			// ShiftToCurrentLocation ();
 
 	        // add pins for each bus stops
-	        // bus stops loaded from json
-			var busStops = JsonLoader.LoadStops ();
-
-			foreach (BusStop busStop in busStops) {
+	        foreach (BusStop busStop in BusHelper.BusStops) {
 				var pin = new Pin {
 				            Type = PinType.Place,
 							Position = new Xamarin.Forms.Maps.Position(busStop.latitude, busStop.longitude),
@@ -55,17 +52,10 @@ namespace NUSBusMap
 			    	map.VisibleRegion.Center, Distance.FromKilometers(radius)));
 			};
 
-			// temp button to test geolocation
-//			Button geoButton = new Button {
-//				Text = "Get current location"
-//			};
-//			geoButton.Clicked += OnGetLocation;
-
 			// add map and slider to stack layout
 	        var stack = new StackLayout { Spacing = 0 };
 	        stack.Children.Add(map);
 			stack.Children.Add(slider);
-			// stack.Children.Add(geoButton);
 
 			Icon = "MapTabIcon.png";
 			Title = "Map";
@@ -73,8 +63,7 @@ namespace NUSBusMap
 
 	    }
 
-	    // private void OnGetLocation (object sender, EventArgs e) {
-		private void GetCentre () {
+		private void ShiftToCurrentLocation () {
 			var geolocation = GetCurrentPosition ().ContinueWith(t => {
 	            if (t.IsFaulted)
 	            {

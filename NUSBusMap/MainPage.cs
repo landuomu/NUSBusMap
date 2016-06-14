@@ -9,7 +9,10 @@ namespace NUSBusMap
 		public MainPage ()
 		{
 			Children.Add (new MapPage ());
-			Children.Add (new SvcPage ());
+			Children.Add (new NavigationPage(new SvcPage ()) {
+				Icon = "BusTabIcon.png",
+				Title = "Bus Services"
+			});
 		}
 	}
 }
