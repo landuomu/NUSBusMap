@@ -38,12 +38,15 @@ namespace NUSBusMap
 
 	        // add pins for each bus stops
 	        foreach (BusStop busStop in BusHelper.BusStops.Values) {
+	        	var description = "";
+	        	foreach (string svc in busStop.services) 
+					description += svc + ": " + BusHelper.GetArrivalTiming (busStop.busStopCode, svc) + "\n";
 				var pin = new Pin {
-				            Type = PinType.Place,
-							Position = new Xamarin.Forms.Maps.Position(busStop.latitude, busStop.longitude),
-				            Label = busStop.name + " - " + busStop.busStopCode,
-							Address = "Bus service - Bus arrival timings"
-				        };
+		            Type = PinType.Place,
+					Position = new Xamarin.Forms.Maps.Position(busStop.latitude, busStop.longitude),
+		            Label = busStop.name + " - " + busStop.busStopCode,
+					Address = description
+		        };
 				var stop = new CustomPin {
 					Pin = pin,
 					Id = "stop",
@@ -138,11 +141,15 @@ namespace NUSBusMap
 
 				// add pin to map if svc show on map
 				if (BusHelper.BusSvcs [bor.routeName].showOnMap) {
+					var description = "Start: " + BusHelper.BusStops [bor.firstStop].name + "\n" +
+					                  "End: " + BusHelper.BusStops [bor.lastStop].name + "\n" +
+					                  "Approaching: " + BusHelper.BusStops [(int)bor.nextStopEnumerator.Current].name + "\n" +
+					                  "In: " + BusHelper.GetArrivalTiming ((int)bor.nextStopEnumerator.Current, bor.routeName);
 					var pin = new Pin {
-						Type = PinType.SavedPin,
+						Type = PinType.Place,
 						Position = new Xamarin.Forms.Maps.Position (bor.latitude, bor.longitude),
 						Label = bor.routeName,
-						Address = "Next stop - " + BusHelper.BusStops [(int)bor.nextStopEnumerator.Current].name
+						Address = description
 					};
 					var bus = new CustomPin {
 						Pin = pin,

@@ -40,6 +40,11 @@ namespace NUSBusMap
 		public static bool RemoveBusOnRoad (string vehiclePlate) {
 			return ActiveBuses.Remove (vehiclePlate);
 		}
+
+		public static int GetArrivalTiming (int busStopCode, string routeName) {
+			// TODO: calculate arrival timing based on bus stop and route
+			return 3;
+		}
 	}
 }
 
