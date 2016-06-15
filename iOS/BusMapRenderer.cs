@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 using CoreGraphics;
 using NUSBusMap;
@@ -59,13 +60,8 @@ namespace NUSBusMap.iOS
 
 			annotationView = mapView.DequeueReusableAnnotation (customPin.Id);
 			if (annotationView == null) {
-				annotationView = new CustomMKPinAnnotationView (annotation, customPin.Id);
-				annotationView.Image = UIImage.FromFile (customPin.Url);
-				annotationView.CalloutOffset = new CGPoint (0, 0);
-				// annotationView.LeftCalloutAccessoryView = new UIImageView (UIImage.FromFile (customPin.Url));
-				// annotationView.RightCalloutAccessoryView = UIButton.FromType (UIButtonType.DetailDisclosure);
-				((CustomMKPinAnnotationView)annotationView).Id = customPin.Id;
-				((CustomMKPinAnnotationView)annotationView).Url = customPin.Url;
+				annotationView = new MKAnnotationView (annotation, customPin.Id);
+				annotationView.Image = UIImage.FromFile (customPin.Url).Scale(new SizeF() { Height=20, Width=20 });
 			}
 			annotationView.CanShowCallout = true;
 
@@ -86,9 +82,9 @@ namespace NUSBusMap.iOS
 			customPinView = new UIView ();
 
 			customPinView.Frame = new CGRect (0, 0, 200, 84);
-			var image = new UIImageView (new CGRect (0, 0, 200, 84));
-			image.Image = UIImage.FromFile (customView.Url);
-			customPinView.AddSubview (image);
+//			var image = new UIImageView (new CGRect (0, 0, 200, 84));
+//			image.Image = UIImage.FromFile (customView.Url);
+//			customPinView.AddSubview (image);
 			customPinView.Center = new CGPoint (0, -(e.View.Frame.Height + 75));
 			e.View.AddSubview (customPinView);
 		}

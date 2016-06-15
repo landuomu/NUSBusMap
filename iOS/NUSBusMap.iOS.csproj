@@ -168,6 +168,5 @@
     <BundleResource Include="Resources\Info.png" />
     <BundleResource Include="Resources\bus.png" />
     <BundleResource Include="Resources\stop.png" />
-    <BundleResource Include="Resources\pin.png" />
   </ItemGroup>
 </Project>
