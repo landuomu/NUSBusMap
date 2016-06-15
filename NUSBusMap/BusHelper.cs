@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using XLabs.Platform.Device;
+using XLabs.Platform;
+using XLabs.Ioc;
+using XLabs.Platform.Services.Geolocation; // to calculate position
+
 namespace NUSBusMap
 {
 	public static class BusHelper
@@ -32,7 +37,8 @@ namespace NUSBusMap
 				nextStopEnumerator = stopEnum,
 				// take firstStop position as initial bus position
 				latitude = BusStops[svc.firstStop].latitude,
-				longitude = BusStops[svc.firstStop].longitude
+				longitude = BusStops[svc.firstStop].longitude,
+				speed = 10.0
 			};
 			ActiveBuses.Add (vehiclePlate, bus);
 		}
@@ -43,23 +49,44 @@ namespace NUSBusMap
 
 		public static int GetArrivalTiming (int busStopCode, string routeName) {
 			// TODO: calculate arrival timing based on bus stop and route
+			Position stopPos = new Position ();
+			stopPos.Latitude = BusStops [busStopCode].latitude;
+			stopPos.Longitude = BusStops [busStopCode].longitude;
+
+			int min = Int16.MaxValue;
+			foreach (BusOnRoad bor in ActiveBuses.Values) {
+				if (bor.routeName.Equals(routeName)) {
+					Position busPos = new Position ();
+					busPos.Latitude = bor.latitude;
+					busPos.Longitude = bor.longitude;
+
+					// TODO: think of a better way to calculate
+				}
+			}
 			return 3;
 		}
 
-		public static void GoToNextCheckpoint (string vehiclePlate, string routeName) {
-			if (ActiveBuses [vehiclePlate].nextCheckpointEnumerator == null)
-				ActiveBuses [vehiclePlate].nextCheckpointEnumerator = BusSvcs [routeName].checkpoints.GetEnumerator ();
+		public static void GoToNextCheckpoint (BusOnRoad bor)
+		{
+			var svc = BusSvcs [bor.routeName];
+			if (bor.nextCheckpointEnumerator == null)
+				bor.nextCheckpointEnumerator = svc.checkpoints.GetEnumerator ();
 
-			double longitude = BusStops[BusSvcs[routeName].firstStop].longitude;
-			double latitude = BusStops[BusSvcs[routeName].firstStop].latitude;
+			double longitude = BusStops [svc.firstStop].longitude;
+			double latitude = BusStops [svc.firstStop].latitude;
 
-			if (ActiveBuses [vehiclePlate].nextCheckpointEnumerator.MoveNext ())
-				longitude = (double)ActiveBuses [vehiclePlate].nextCheckpointEnumerator.Current;
-			if (ActiveBuses [vehiclePlate].nextCheckpointEnumerator.MoveNext ())
-				latitude = (double)ActiveBuses [vehiclePlate].nextCheckpointEnumerator.Current;
+			// update position based on checkpoint
+			if (bor.nextCheckpointEnumerator.MoveNext ())
+				longitude = (double)bor.nextCheckpointEnumerator.Current;
+			else {
+				RemoveBusOnRoad (bor.vehiclePlate);
+				return;
+			}
+			if (bor.nextCheckpointEnumerator.MoveNext ())
+				latitude = (double)bor.nextCheckpointEnumerator.Current;
 
-			ActiveBuses [vehiclePlate].longitude = longitude;
-			ActiveBuses [vehiclePlate].latitude = latitude;
+			bor.longitude = longitude;
+			bor.latitude = latitude;
 		}
 	}
 }

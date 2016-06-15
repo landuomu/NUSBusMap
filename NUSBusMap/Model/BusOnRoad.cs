@@ -13,6 +13,7 @@ namespace NUSBusMap
 		public IEnumerator nextCheckpointEnumerator { get; set; }
 		public double latitude { get; set; }
 		public double longitude { get; set; }
+		public double speed { get; set; }
 	}
 }
 
