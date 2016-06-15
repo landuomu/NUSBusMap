@@ -27,7 +27,6 @@ namespace NUSBusMap.iOS
 			if (e.OldElement != null) {
 				var nativeMap = Control as MKMapView;
 				nativeMap.GetViewForAnnotation = null;
-				// nativeMap.CalloutAccessoryControlTapped -= OnCalloutAccessoryControlTapped;
 				nativeMap.DidSelectAnnotationView -= OnDidSelectAnnotationView;
 				nativeMap.DidDeselectAnnotationView -= OnDidDeselectAnnotationView;
 			}
@@ -39,7 +38,6 @@ namespace NUSBusMap.iOS
 				stopPins = formsMap.StopPins;
 
 				nativeMap.GetViewForAnnotation = GetViewForAnnotation;
-				// nativeMap.CalloutAccessoryControlTapped += OnCalloutAccessoryControlTapped;
 				nativeMap.DidSelectAnnotationView += OnDidSelectAnnotationView;
 				nativeMap.DidDeselectAnnotationView += OnDidDeselectAnnotationView;
 			}
@@ -58,34 +56,42 @@ namespace NUSBusMap.iOS
 				throw new Exception ("Custom pin not found");
 			}
 
+			// add custom image for map pin
 			annotationView = mapView.DequeueReusableAnnotation (customPin.Id);
 			if (annotationView == null) {
 				annotationView = new MKAnnotationView (annotation, customPin.Id);
 				annotationView.Image = UIImage.FromFile (customPin.Url).Scale(new SizeF() { Height=20, Width=20 });
 			}
-			annotationView.CanShowCallout = true;
-
+			// hide default callout
+			annotationView.CanShowCallout = false;
 			return annotationView;
 		}
 
-//		void OnCalloutAccessoryControlTapped (object sender, MKMapViewAccessoryTappedEventArgs e)
-//		{
-//			var customView = e.View as CustomMKPinAnnotationView;
-//			if (!string.IsNullOrWhiteSpace (customView.Url)) {
-//				UIApplication.SharedApplication.OpenUrl (new Foundation.NSUrl (customView.Url));
-//			}
-//		}
-
 		void OnDidSelectAnnotationView (object sender, MKAnnotationViewEventArgs e)
 		{
-			var customView = e.View as CustomMKPinAnnotationView;
-			customPinView = new UIView ();
+			// create custom callout with bus info
+			// set background for callout
+			var frame = new CGRect (0, 0, 200, 84);
+			customPinView = new UIView { 
+				Frame = frame,
+				BackgroundColor = new UIColor(0.8f,0.8f,0.8f,0.3f),
+				Center = new CGPoint (0, -(e.View.Frame.Height + 20))
+			};
+			customPinView.Layer.BorderColor = new CGColor(0,0,0,50);
+			customPinView.Layer.BorderWidth = 1f;
+			customPinView.Layer.CornerRadius = 2f;
 
-			customPinView.Frame = new CGRect (0, 0, 200, 84);
-//			var image = new UIImageView (new CGRect (0, 0, 200, 84));
-//			image.Image = UIImage.FromFile (customView.Url);
-//			customPinView.AddSubview (image);
-			customPinView.Center = new CGPoint (0, -(e.View.Frame.Height + 75));
+			// add text info
+			customPinView.Add(new UILabel { 
+				Frame = frame,
+				// title - label, subtitle - address (in xamarin.forms.maps)
+				Text = e.View.Annotation.GetTitle() + "\n" + e.View.Annotation.GetSubtitle(), 
+				Font = UIFont.FromName("Helvetica", 12f),
+				TextAlignment = UITextAlignment.Left,
+				AdjustsFontSizeToFitWidth = true,
+				LineBreakMode = UILineBreakMode.WordWrap,
+				Lines = 0
+			});
 			e.View.AddSubview (customPinView);
 		}
 
