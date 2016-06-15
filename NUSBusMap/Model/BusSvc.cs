@@ -11,6 +11,7 @@ namespace NUSBusMap
 		public int firstStop { get; set; }
 		public int lastStop { get; set; }
 		public List<int> stops { get; set; }
+		public bool showOnMap { get; set; }
 	}
 }
 

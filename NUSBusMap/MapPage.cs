@@ -18,8 +18,11 @@ namespace NUSBusMap
 		private BusMap map;
 		private const double DEFAULT_RADIUS = 0.5;
 		private const int REFRESH_INTERVAL = 3;
+		private Random rand;
 
 	    public MapPage() {
+	    	// init random generator for generating bus positions
+			rand = new Random ();
 	    	// map with default centre at NUS
 			var NUSCenter = new Xamarin.Forms.Maps.Position (1.2966, 103.7764);
 	        map = new BusMap(
@@ -70,6 +73,8 @@ namespace NUSBusMap
 
 	        // add random buses for testing
 			BusHelper.AddBusOnRoad ("PC1221", "A1");
+			BusHelper.AddBusOnRoad ("CS1231", "A1");
+			BusHelper.AddBusOnRoad ("AL1441", "A1E");
 			BusHelper.AddBusOnRoad ("PC1222", "C");
 
 	        // set timer to update bus and current location
@@ -77,7 +82,7 @@ namespace NUSBusMap
 	    }
 
 		private void ShiftToCurrentLocation () {
-			var geolocation = GetCurrentPosition ().ContinueWith(t => {
+			GetCurrentPosition ().ContinueWith(t => {
 	            if (t.IsFaulted)
 	            {
 	                System.Diagnostics.Debug.WriteLine("Error : {0}", ((GeolocationException)t.Exception.InnerException).Error.ToString());
@@ -119,30 +124,34 @@ namespace NUSBusMap
 	        return result;
 	    }
 
-	    private bool UpdatePositions() {
-	    	// remove all bus pins
-			var busPins = map.Pins.Where (pin => (pin.Type.Equals (PinType.SavedPin)));
-			foreach (Pin p in busPins.ToList())
-				map.Pins.Remove (p);
+	    private bool UpdatePositions ()
+		{
+			// remove all bus pins
+			foreach (CustomPin p in map.BusPins)
+				map.Pins.Remove (p.Pin);
+			map.BusPins.Clear ();
 
 			foreach (BusOnRoad bor in BusHelper.ActiveBuses.Values) {
 				// temp change position randomly for test
-				bor.latitude -= 0.00003;
-				bor.longitude -= 0.00003;
+				bor.latitude += rand.NextDouble () * 0.0001 - 0.00005;
+				bor.longitude += rand.NextDouble () * 0.0001 - 0.00005;
 
-				var pin = new Pin {
-					Type = PinType.SavedPin,
-					Position = new Xamarin.Forms.Maps.Position (bor.latitude, bor.longitude),
-					Label = bor.routeName,
-					Address = "Next stop - " + BusHelper.BusStops [(int)bor.nextStopEnumerator.Current].name
-				};
-				var bus = new CustomPin {
-					Pin = pin,
-					Id = "bus",
-					Url = "bus.png"
-				};
-				map.Pins.Add (pin);
-				map.BusPins.Add (bus);
+				// add pin to map if svc show on map
+				if (BusHelper.BusSvcs [bor.routeName].showOnMap) {
+					var pin = new Pin {
+						Type = PinType.SavedPin,
+						Position = new Xamarin.Forms.Maps.Position (bor.latitude, bor.longitude),
+						Label = bor.routeName,
+						Address = "Next stop - " + BusHelper.BusStops [(int)bor.nextStopEnumerator.Current].name
+					};
+					var bus = new CustomPin {
+						Pin = pin,
+						Id = "bus",
+						Url = "bus.png"
+					};
+					map.Pins.Add (pin);
+					map.BusPins.Add (bus);
+				}
 			}
 
 			return true;

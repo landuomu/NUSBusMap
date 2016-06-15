@@ -6,9 +6,9 @@ namespace NUSBusMap
 {
 	public class SvcInfoPage : ContentPage
 	{
-		public SvcInfoPage ()
+		public SvcInfoPage (string routeName)
 		{
-			Title = "Bus Route Information";
+			Title = routeName + " Route Information";
 		}
 	}
 }

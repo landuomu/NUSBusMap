@@ -23,17 +23,18 @@ namespace NUSBusMap
 			Icon = "BusTabIcon.png";
 			Title = "Bus Services";
 			Content = view;
-			// test
 		}
 
 		private void onToggleSvc (object sender, ToggledEventArgs e)
 		{
-			// TODO: show/hide buses of routeName on map
+			// show/hide buses of routeName (sender.StyleId) on map
+			BusHelper.BusSvcs[((Switch)sender).StyleId].showOnMap = e.Value;
 		}
 
 		private async void onClickInfo (object sender, EventArgs e)
 		{
-			await Navigation.PushAsync (new SvcInfoPage ());
+			// open bus route info for routeName (sender.StyleId)
+			await Navigation.PushAsync (new SvcInfoPage (((Button)sender).StyleId));
 		}
 	}
 }
