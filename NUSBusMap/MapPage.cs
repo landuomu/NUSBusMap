@@ -15,14 +15,14 @@ using XLabs.Platform.Services.Geolocation;
 namespace NUSBusMap
 {
 	public class MapPage : ContentPage {
-		private Map map;
+		private BusMap map;
 		private const double DEFAULT_RADIUS = 0.5;
 		private const int REFRESH_INTERVAL = 3;
 
 	    public MapPage() {
 	    	// map with default centre at NUS
 			var NUSCenter = new Xamarin.Forms.Maps.Position (1.2966, 103.7764);
-	        map = new Map(
+	        map = new BusMap(
 	            MapSpan.FromCenterAndRadius(NUSCenter, Distance.FromKilometers(DEFAULT_RADIUS))) {
 	                IsShowingUser = true,
 	                HeightRequest = 100,
@@ -41,7 +41,13 @@ namespace NUSBusMap
 				            Label = busStop.name + " - " + busStop.busStopCode,
 							Address = "Bus service - Bus arrival timings"
 				        };
+				var stop = new CustomPin {
+					Pin = pin,
+					Id = "stop",
+					Url = "stop.png"
+				};
 				map.Pins.Add(pin);
+				map.StopPins.Add (stop);
 			}
 
 	        // slider to change radius from 0.1 - 0.9 km
@@ -124,12 +130,19 @@ namespace NUSBusMap
 				bor.latitude -= 0.00003;
 				bor.longitude -= 0.00003;
 
-				map.Pins.Add (new Pin {
+				var pin = new Pin {
 					Type = PinType.SavedPin,
-					Position = new Xamarin.Forms.Maps.Position(bor.latitude, bor.longitude),
-		            Label = bor.routeName,
-					Address = "Next stop - " + BusHelper.BusStops[(int)bor.nextStopEnumerator.Current].name
-				});
+					Position = new Xamarin.Forms.Maps.Position (bor.latitude, bor.longitude),
+					Label = bor.routeName,
+					Address = "Next stop - " + BusHelper.BusStops [(int)bor.nextStopEnumerator.Current].name
+				};
+				var bus = new CustomPin {
+					Pin = pin,
+					Id = "bus",
+					Url = "bus.png"
+				};
+				map.Pins.Add (pin);
+				map.BusPins.Add (bus);
 			}
 
 			return true;
