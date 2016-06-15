@@ -14,17 +14,17 @@ namespace NUSBusMap
 
 		public static IStreamLoader Loader { get; set;}
 
-		public static  IEnumerable<BusStop> LoadStops()
+		public static  Dictionary<int,BusStop> LoadStops()
 		{
 			using (var reader = new StreamReader(OpenData(stopsFilename))) {
-				return JsonConvert.DeserializeObject<List<BusStop>>( reader.ReadToEnd());
+				return JsonConvert.DeserializeObject<Dictionary<int,BusStop>>( reader.ReadToEnd());
 			}
 		}
 
-		public static IEnumerable<BusSvc> LoadSvcs()
+		public static Dictionary<string,BusSvc> LoadSvcs()
 		{
 			using (var reader = new StreamReader(OpenData(svcsFilename))) {
-				return JsonConvert.DeserializeObject<List<BusSvc>>(reader.ReadToEnd());
+				return JsonConvert.DeserializeObject<Dictionary<string,BusSvc>>(reader.ReadToEnd());
 			}
 		}
 

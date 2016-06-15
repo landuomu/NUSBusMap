@@ -17,6 +17,7 @@ namespace NUSBusMap
 	public class MapPage : ContentPage {
 		private Map map;
 		private const double DEFAULT_RADIUS = 0.5;
+		private const int REFRESH_INTERVAL = 3;
 
 	    public MapPage() {
 	    	// map with default centre at NUS
@@ -33,7 +34,7 @@ namespace NUSBusMap
 			// ShiftToCurrentLocation ();
 
 	        // add pins for each bus stops
-	        foreach (BusStop busStop in BusHelper.BusStops) {
+	        foreach (BusStop busStop in BusHelper.BusStops.Values) {
 				var pin = new Pin {
 				            Type = PinType.Place,
 							Position = new Xamarin.Forms.Maps.Position(busStop.latitude, busStop.longitude),
@@ -61,6 +62,12 @@ namespace NUSBusMap
 			Title = "Map";
 	        Content = stack;
 
+	        // add random buses for testing
+			BusHelper.AddBusOnRoad ("PC1221", "A1");
+			BusHelper.AddBusOnRoad ("PC1222", "C");
+
+	        // set timer to update bus and current location
+			Device.StartTimer (TimeSpan.FromSeconds(REFRESH_INTERVAL), UpdatePositions);
 	    }
 
 		private void ShiftToCurrentLocation () {
@@ -82,7 +89,7 @@ namespace NUSBusMap
 	        }, TaskScheduler.FromCurrentSynchronizationContext ());
 	    }
 
-		public async Task<XLabs.Platform.Services.Geolocation.Position> GetCurrentPosition() {
+		private async Task<XLabs.Platform.Services.Geolocation.Position> GetCurrentPosition() {
 			IGeolocator geolocator = Resolver.Resolve<IGeolocator>();
 
 			XLabs.Platform.Services.Geolocation.Position result = null;
@@ -104,6 +111,28 @@ namespace NUSBusMap
 	        }
 
 	        return result;
+	    }
+
+	    private bool UpdatePositions() {
+	    	// remove all bus pins
+			var busPins = map.Pins.Where (pin => (pin.Type.Equals (PinType.SavedPin)));
+			foreach (Pin p in busPins.ToList())
+				map.Pins.Remove (p);
+
+			foreach (BusOnRoad bor in BusHelper.ActiveBuses.Values) {
+				// temp change position randomly for test
+				bor.latitude -= 0.00003;
+				bor.longitude -= 0.00003;
+
+				map.Pins.Add (new Pin {
+					Type = PinType.SavedPin,
+					Position = new Xamarin.Forms.Maps.Position(bor.latitude, bor.longitude),
+		            Label = bor.routeName,
+					Address = "Next stop - " + BusHelper.BusStops[(int)bor.nextStopEnumerator.Current].name
+				});
+			}
+
+			return true;
 	    }
 	}
 }
