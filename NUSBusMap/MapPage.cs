@@ -136,8 +136,11 @@ namespace NUSBusMap
 
 			foreach (BusOnRoad bor in BusHelper.ActiveBuses.Values) {
 				// temp change position randomly for test
-				bor.latitude += rand.NextDouble () * 0.0001 - 0.00005;
-				bor.longitude += rand.NextDouble () * 0.0001 - 0.00005;
+				// bor.latitude += rand.NextDouble () * 0.0001 - 0.00005;
+				// bor.longitude += rand.NextDouble () * 0.0001 - 0.00005;
+
+				// move bus to next checkpoint on the route for simulation
+				BusHelper.GoToNextCheckpoint (bor.vehiclePlate, bor.routeName);
 
 				// add pin to map if svc show on map
 				if (BusHelper.BusSvcs [bor.routeName].showOnMap) {

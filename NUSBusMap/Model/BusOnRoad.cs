@@ -10,6 +10,7 @@ namespace NUSBusMap
 		public int firstStop { get; set; }
 		public int lastStop { get; set; }
 		public IEnumerator nextStopEnumerator { get; set; }
+		public IEnumerator nextCheckpointEnumerator { get; set; }
 		public double latitude { get; set; }
 		public double longitude { get; set; }
 	}

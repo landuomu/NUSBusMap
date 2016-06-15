@@ -45,6 +45,22 @@ namespace NUSBusMap
 			// TODO: calculate arrival timing based on bus stop and route
 			return 3;
 		}
+
+		public static void GoToNextCheckpoint (string vehiclePlate, string routeName) {
+			if (ActiveBuses [vehiclePlate].nextCheckpointEnumerator == null)
+				ActiveBuses [vehiclePlate].nextCheckpointEnumerator = BusSvcs [routeName].checkpoints.GetEnumerator ();
+
+			double longitude = BusStops[BusSvcs[routeName].firstStop].longitude;
+			double latitude = BusStops[BusSvcs[routeName].firstStop].latitude;
+
+			if (ActiveBuses [vehiclePlate].nextCheckpointEnumerator.MoveNext ())
+				longitude = (double)ActiveBuses [vehiclePlate].nextCheckpointEnumerator.Current;
+			if (ActiveBuses [vehiclePlate].nextCheckpointEnumerator.MoveNext ())
+				latitude = (double)ActiveBuses [vehiclePlate].nextCheckpointEnumerator.Current;
+
+			ActiveBuses [vehiclePlate].longitude = longitude;
+			ActiveBuses [vehiclePlate].latitude = latitude;
+		}
 	}
 }
 
