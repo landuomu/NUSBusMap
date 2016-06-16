@@ -10,7 +10,7 @@ namespace NUSBusMap
 {
 	public static class BusHelper
 	{
-		public static Dictionary<int,BusStop> BusStops;
+		public static Dictionary<string,BusStop> BusStops;
 		public static Dictionary<string,BusSvc> BusSvcs;
 		public static Dictionary<string,BusOnRoad> ActiveBuses;
 
@@ -47,7 +47,7 @@ namespace NUSBusMap
 			return ActiveBuses.Remove (vehiclePlate);
 		}
 
-		public static int GetArrivalTiming (int busStopCode, string routeName) {
+		public static int GetArrivalTiming (string busStopCode, string routeName) {
 			// TODO: calculate arrival timing based on bus stop and route
 			Position stopPos = new Position ();
 			stopPos.Latitude = BusStops [busStopCode].latitude;

@@ -89,8 +89,8 @@ namespace NUSBusMap
 				pos, Distance.FromKilometers (currRadius)));
 	    }
 
-	    public static void ToggleFreezeMap () {
-			FreezeMap = !FreezeMap;
+	    public static void SetFreezeMap (bool value) {
+			FreezeMap = value;
 	    }
 
 		private void ShiftToCurrentLocation () {
@@ -159,8 +159,8 @@ namespace NUSBusMap
 				if (BusHelper.BusSvcs [bor.routeName].showOnMap) {
 					var description = "Start: " + BusHelper.BusStops [bor.firstStop].name + "\n" +
 					                  "End: " + BusHelper.BusStops [bor.lastStop].name + "\n" +
-					                  "Approaching: " + BusHelper.BusStops [(int)bor.nextStopEnumerator.Current].name + "\n" +
-					                  "In: " + BusHelper.GetArrivalTiming ((int)bor.nextStopEnumerator.Current, bor.routeName);
+					                  "Approaching: " + BusHelper.BusStops [(string)bor.nextStopEnumerator.Current].name + "\n" +
+					                  "In: " + BusHelper.GetArrivalTiming ((string)bor.nextStopEnumerator.Current, bor.routeName);
 					var pin = new Pin {
 						Type = PinType.Place,
 						Position = new Xamarin.Forms.Maps.Position (bor.latitude, bor.longitude),

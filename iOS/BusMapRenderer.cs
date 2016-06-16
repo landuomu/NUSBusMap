@@ -72,7 +72,7 @@ namespace NUSBusMap.iOS
 			// centralise map and freeze map updates
 			MapPage.CentraliseMap (new Position(e.View.Annotation.Coordinate.Latitude, 
 									e.View.Annotation.Coordinate.Longitude));
-			MapPage.ToggleFreezeMap ();
+			MapPage.SetFreezeMap (true);
 
 			// create custom callout with bus info
 			// set background for callout
@@ -106,7 +106,7 @@ namespace NUSBusMap.iOS
 				customPinView.RemoveFromSuperview ();
 				customPinView.Dispose ();
 				customPinView = null;
-				MapPage.ToggleFreezeMap ();
+				MapPage.SetFreezeMap (false);
 			}
 		}
 
