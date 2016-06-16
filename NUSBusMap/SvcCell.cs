@@ -24,14 +24,16 @@ namespace NUSBusMap
 
 			Switch switcher = new Switch {
 				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Start
+				VerticalOptions = LayoutOptions.Start,
+				StyleId = svc
 			};
 			switcher.Toggled += onToggleSvc;
 
 			Button svcInfoBtn = new Button {
 				Image = "Info.png",
 				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center
+				VerticalOptions = LayoutOptions.Center,
+				StyleId = svc
 			};
 			svcInfoBtn.Clicked += onClickInfo;
 

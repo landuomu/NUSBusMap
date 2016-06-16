@@ -155,6 +155,8 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="StreamLoader.cs" />
+    <Compile Include="BusMapRenderer.cs" />
+    <Compile Include="CustomMKPinAnnotationView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.2.2.0.31\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.2.2.0.31\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />
@@ -164,5 +166,19 @@
     <BundleResource Include="Resources\BusTabIcon.png" />
     <BundleResource Include="Resources\MapTabIcon.png" />
     <BundleResource Include="Resources\Info.png" />
+    <BundleResource Include="Resources\stop.png" />
+    <BundleResource Include="Resources\NUSBusStops.json" />
+    <BundleResource Include="Resources\A1.png" />
+    <BundleResource Include="Resources\A1E.png" />
+    <BundleResource Include="Resources\A2.png" />
+    <BundleResource Include="Resources\A2E%28AM%29.png" />
+    <BundleResource Include="Resources\A2E%28PM%29.png" />
+    <BundleResource Include="Resources\B.png" />
+    <BundleResource Include="Resources\BTC.png" />
+    <BundleResource Include="Resources\C.png" />
+    <BundleResource Include="Resources\D1.png" />
+    <BundleResource Include="Resources\D2.png" />
+    <BundleResource Include="Resources\UT-CLB.png" />
+    <BundleResource Include="Resources\UT-FOS.png" />
   </ItemGroup>
 </Project>

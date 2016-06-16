@@ -15,14 +15,17 @@ using XLabs.Platform.Services.Geolocation;
 namespace NUSBusMap
 {
 	public class MapPage : ContentPage {
-		private Map map;
-		private const double DEFAULT_RADIUS = 0.5;
-		private const int REFRESH_INTERVAL = 3;
+		private static bool FreezeMap = false;
+		private static BusMap map;
+		private static double currRadius = 0.5;
+		private static double DEFAULT_RADIUS = 0.5;
+		private static int REFRESH_INTERVAL = 3;
+
 
 	    public MapPage() {
 	    	// map with default centre at NUS
 			var NUSCenter = new Xamarin.Forms.Maps.Position (1.2966, 103.7764);
-	        map = new Map(
+	        map = new BusMap(
 	            MapSpan.FromCenterAndRadius(NUSCenter, Distance.FromKilometers(DEFAULT_RADIUS))) {
 	                IsShowingUser = true,
 	                HeightRequest = 100,
@@ -35,22 +38,31 @@ namespace NUSBusMap
 
 	        // add pins for each bus stops
 	        foreach (BusStop busStop in BusHelper.BusStops.Values) {
+	        	var description = "";
+	        	foreach (string svc in busStop.services) 
+					description += svc + ": " + BusHelper.GetArrivalTiming (busStop.busStopCode, svc) + "\n";
 				var pin = new Pin {
-				            Type = PinType.Place,
-							Position = new Xamarin.Forms.Maps.Position(busStop.latitude, busStop.longitude),
-				            Label = busStop.name + " - " + busStop.busStopCode,
-							Address = "Bus service - Bus arrival timings"
-				        };
+		            Type = PinType.Place,
+					Position = new Xamarin.Forms.Maps.Position(busStop.latitude, busStop.longitude),
+		            Label = busStop.name + " - " + busStop.busStopCode,
+					Address = description
+		        };
+		        var stop = new CustomPin {
+					Pin = pin,
+					Id = "stop",
+					Url = "stop.png"
+				};
 				map.Pins.Add(pin);
+				map.StopPins.Add (stop);
 			}
 
 	        // slider to change radius from 0.1 - 0.9 km
 			var slider = new Slider (1, 9, 5);
 			slider.ValueChanged += (sender, e) => {
 			    var zoomLevel = e.NewValue; // between 1 and 9
-			    var radius = 1.0 - (zoomLevel/10.0);
+			    currRadius = 1.0 - (zoomLevel/10.0);
 			    map.MoveToRegion(MapSpan.FromCenterAndRadius(
-			    	map.VisibleRegion.Center, Distance.FromKilometers(radius)));
+			    	map.VisibleRegion.Center, Distance.FromKilometers(currRadius)));
 			};
 
 			// add map and slider to stack layout
@@ -64,14 +76,25 @@ namespace NUSBusMap
 
 	        // add random buses for testing
 			BusHelper.AddBusOnRoad ("PC1221", "A1");
+			BusHelper.AddBusOnRoad ("AL1441", "A1E");
 			BusHelper.AddBusOnRoad ("PC1222", "C");
+			BusHelper.AddBusOnRoad ("CS1231", "D2");
 
 	        // set timer to update bus and current location
 			Device.StartTimer (TimeSpan.FromSeconds(REFRESH_INTERVAL), UpdatePositions);
 	    }
 
+	    public static void CentraliseMap (Xamarin.Forms.Maps.Position pos) {
+	    	map.MoveToRegion(MapSpan.FromCenterAndRadius(
+				pos, Distance.FromKilometers (currRadius)));
+	    }
+
+	    public static void SetFreezeMap (bool value) {
+			FreezeMap = value;
+	    }
+
 		private void ShiftToCurrentLocation () {
-			var geolocation = GetCurrentPosition ().ContinueWith(t => {
+			GetCurrentPosition ().ContinueWith(t => {
 	            if (t.IsFaulted)
 	            {
 	                System.Diagnostics.Debug.WriteLine("Error : {0}", ((GeolocationException)t.Exception.InnerException).Error.ToString());
@@ -113,23 +136,45 @@ namespace NUSBusMap
 	        return result;
 	    }
 
-	    private bool UpdatePositions() {
-	    	// remove all bus pins
-			var busPins = map.Pins.Where (pin => (pin.Type.Equals (PinType.SavedPin)));
-			foreach (Pin p in busPins.ToList())
-				map.Pins.Remove (p);
+	    private bool UpdatePositions ()
+		{
+			// skip update pins if map is freezed
+			if (FreezeMap)
+				return true;
+
+			// remove all bus pins
+			foreach (CustomPin p in map.BusPins)
+				map.Pins.Remove (p.Pin);
+			map.BusPins.Clear ();
 
 			foreach (BusOnRoad bor in BusHelper.ActiveBuses.Values) {
 				// temp change position randomly for test
-				bor.latitude -= 0.00003;
-				bor.longitude -= 0.00003;
+				// bor.latitude += rand.NextDouble () * 0.0001 - 0.00005;
+				// bor.longitude += rand.NextDouble () * 0.0001 - 0.00005;
 
-				map.Pins.Add (new Pin {
-					Type = PinType.SavedPin,
-					Position = new Xamarin.Forms.Maps.Position(bor.latitude, bor.longitude),
-		            Label = bor.routeName,
-					Address = "Next stop - " + BusHelper.BusStops[(int)bor.nextStopEnumerator.Current].name
-				});
+				// move bus to next checkpoint on the route for simulation
+				BusHelper.GoToNextCheckpoint (bor);
+
+				// add pin to map if svc show on map
+				if (BusHelper.BusSvcs [bor.routeName].showOnMap) {
+					var description = "Start: " + BusHelper.BusStops [bor.firstStop].name + "\n" +
+					                  "End: " + BusHelper.BusStops [bor.lastStop].name + "\n" +
+					                  "Approaching: " + BusHelper.BusStops [(string)bor.nextStopEnumerator.Current].name + "\n" +
+					                  "In: " + BusHelper.GetArrivalTiming ((string)bor.nextStopEnumerator.Current, bor.routeName);
+					var pin = new Pin {
+						Type = PinType.Place,
+						Position = new Xamarin.Forms.Maps.Position (bor.latitude, bor.longitude),
+						Label = bor.routeName,
+						Address = description
+					};
+					var bus = new CustomPin {
+						Pin = pin,
+						Id = bor.routeName,
+						Url = bor.routeName + ".png"
+					};
+					map.Pins.Add (pin);
+					map.BusPins.Add (bus);
+				}
 			}
 
 			return true;

@@ -14,10 +14,10 @@ namespace NUSBusMap
 
 		public static IStreamLoader Loader { get; set;}
 
-		public static  Dictionary<int,BusStop> LoadStops()
+		public static  Dictionary<string,BusStop> LoadStops()
 		{
 			using (var reader = new StreamReader(OpenData(stopsFilename))) {
-				return JsonConvert.DeserializeObject<Dictionary<int,BusStop>>( reader.ReadToEnd());
+				return JsonConvert.DeserializeObject<Dictionary<string,BusStop>>( reader.ReadToEnd());
 			}
 		}
 
