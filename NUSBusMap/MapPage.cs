@@ -156,8 +156,8 @@ namespace NUSBusMap
 					};
 					var bus = new CustomPin {
 						Pin = pin,
-						Id = "bus",
-						Url = "bus.png"
+						Id = bor.routeName,
+						Url = bor.routeName + ".png"
 					};
 					map.Pins.Add (pin);
 					map.BusPins.Add (bus);
