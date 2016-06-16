@@ -69,6 +69,11 @@ namespace NUSBusMap.iOS
 
 		void OnDidSelectAnnotationView (object sender, MKAnnotationViewEventArgs e)
 		{
+			// centralise map and freeze map updates
+			MapPage.CentraliseMap (new Position(e.View.Annotation.Coordinate.Latitude, 
+									e.View.Annotation.Coordinate.Longitude));
+			MapPage.ToggleFreezeMap ();
+
 			// create custom callout with bus info
 			// set background for callout
 			var frame = new CGRect (0, 0, 200, 84);
@@ -101,6 +106,7 @@ namespace NUSBusMap.iOS
 				customPinView.RemoveFromSuperview ();
 				customPinView.Dispose ();
 				customPinView = null;
+				MapPage.ToggleFreezeMap ();
 			}
 		}
 

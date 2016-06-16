@@ -15,14 +15,14 @@ using XLabs.Platform.Services.Geolocation;
 namespace NUSBusMap
 {
 	public class MapPage : ContentPage {
-		private BusMap map;
-		private const double DEFAULT_RADIUS = 0.5;
-		private const int REFRESH_INTERVAL = 3;
-		private Random rand;
+		private static bool FreezeMap = false;
+		private static BusMap map;
+		private static double currRadius = 0.5;
+		private static double DEFAULT_RADIUS = 0.5;
+		private static int REFRESH_INTERVAL = 3;
+
 
 	    public MapPage() {
-	    	// init random generator for generating bus positions
-			rand = new Random ();
 	    	// map with default centre at NUS
 			var NUSCenter = new Xamarin.Forms.Maps.Position (1.2966, 103.7764);
 	        map = new BusMap(
@@ -47,7 +47,7 @@ namespace NUSBusMap
 		            Label = busStop.name + " - " + busStop.busStopCode,
 					Address = description
 		        };
-				var stop = new CustomPin {
+		        var stop = new CustomPin {
 					Pin = pin,
 					Id = "stop",
 					Url = "stop.png"
@@ -60,9 +60,9 @@ namespace NUSBusMap
 			var slider = new Slider (1, 9, 5);
 			slider.ValueChanged += (sender, e) => {
 			    var zoomLevel = e.NewValue; // between 1 and 9
-			    var radius = 1.0 - (zoomLevel/10.0);
+			    currRadius = 1.0 - (zoomLevel/10.0);
 			    map.MoveToRegion(MapSpan.FromCenterAndRadius(
-			    	map.VisibleRegion.Center, Distance.FromKilometers(radius)));
+			    	map.VisibleRegion.Center, Distance.FromKilometers(currRadius)));
 			};
 
 			// add map and slider to stack layout
@@ -82,6 +82,15 @@ namespace NUSBusMap
 
 	        // set timer to update bus and current location
 			Device.StartTimer (TimeSpan.FromSeconds(REFRESH_INTERVAL), UpdatePositions);
+	    }
+
+	    public static void CentraliseMap (Xamarin.Forms.Maps.Position pos) {
+	    	map.MoveToRegion(MapSpan.FromCenterAndRadius(
+				pos, Distance.FromKilometers (currRadius)));
+	    }
+
+	    public static void ToggleFreezeMap () {
+			FreezeMap = !FreezeMap;
 	    }
 
 		private void ShiftToCurrentLocation () {
@@ -129,6 +138,10 @@ namespace NUSBusMap
 
 	    private bool UpdatePositions ()
 		{
+			// skip update pins if map is freezed
+			if (FreezeMap)
+				return true;
+
 			// remove all bus pins
 			foreach (CustomPin p in map.BusPins)
 				map.Pins.Remove (p.Pin);
