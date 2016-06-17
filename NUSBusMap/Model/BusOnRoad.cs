@@ -11,9 +11,11 @@ namespace NUSBusMap
 		public string lastStop { get; set; }
 		public IEnumerator nextStopEnumerator { get; set; }
 		public IEnumerator nextCheckpointEnumerator { get; set; }
+		public IEnumerator nextDistanceEnumerator { get; set; }
 		public double latitude { get; set; }
 		public double longitude { get; set; }
 		public double speed { get; set; }
+		public double distanceTravelled { get; set; }
 	}
 }
 
