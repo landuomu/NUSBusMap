@@ -4,77 +4,88 @@
 		"latitude": 1.293668,
 		"longitude": 103.784921,
 		"name": "Kent Ridge MRT",
-		"services": ["A1", "A1E", "D2"]
+    "services": [ "A1", "A1E", "D2" ],
+    "road": "Lower Kent Ridge Road"
 	},
 	"18339": {
 		"busStopCode": "18339",
 		"latitude": 1.294113,
 		"longitude": 103.785063,
-		"name": "Opp Kent Ridge MRT",
-		"services": ["A2", "A2E", "D2"]
+		"name": "Opp. Kent Ridge MRT",
+    "services": [ "A2", "A2E", "D2" ],
+    "road": "Lower Kent Ridge Road"
 	},
 	"18301": {
 		"busStopCode": "18301",
 		"latitude": 1.297352,
 		"longitude": 103.780823,
 		"name": "LT29",
-		"services": ["A1", "A1E", "C", "D2", "UT-FOS"]
+    "services": [ "A1", "A1E", "C", "D2", "UT-FOS" ],
+    "road": "Lower Kent Ridge Road"
 	},
 	"18309": {
 		"busStopCode": "18309",
 		"latitude": 1.297538,
 		"longitude": 103.780727,
 		"name": "S17",
-		"services": ["A2", "A2E", "C", "D2"]
+    "services": [ "A2", "A2E", "C", "D2" ],
+    "road": "Lower Kent Ridge Road"
 	},
 	"18311": {
 		"busStopCode": "18311",
 		"latitude": 1.29716,
 		"longitude": 103.778733,
 		"name": "University Hall",
-		"services": ["A1", "C", "D2"]
+    "services": [ "A1", "C", "D2" ],
+    "road": "Lower Kent Ridge Road"
 	},
 	"18319": {
 		"busStopCode": "18319",
 		"latitude": 1.297602,
 		"longitude": 103.777951,
-		"name": "Opp University Hall",
-		"services": ["A1", "C", "D2"]
+		"name": "Opp. University Hall",
+    "services": [ "A1", "C", "D2" ],
+    "road": "Lower Kent Ridge Road"
 	},
 	"18321": {
 		"busStopCode": "18321",
 		"latitude": 1.298766,
 		"longitude": 103.775564,
-		"name": "Opp University Health Centre",
-		"services": ["A1", "C", "D2"]
+		"name": "Opp. University Health Centre",
+    "services": [ "A1", "C", "D2" ],
+    "road": "Lower Kent Ridge Road"
 	},
 	"18329": {
 		"busStopCode": "18329",
 		"latitude": 1.298926,
 		"longitude": 103.775989,
 		"name": "University Health Centre",
-		"services": ["A2", "C", "D2"]
+    "services": [ "A2", "C", "D2" ],
+    "road": "Lower Kent Ridge Road"
 	},
 	"16171": {
 		"busStopCode": "16171",
 		"latitude": 1.298838,
 		"longitude": 103.774324,
 		"name": "Yusof Ishak House",
-		"services": ["A1", "B", "D1", "BTC"]
+    "services": [ "A1", "B", "D1", "BTC" ],
+    "road": "Kent Ridge Crescent"
 	},
 	"16179": {
 		"busStopCode": "16179",
 		"latitude": 1.298992,
 		"longitude": 103.774151,
-		"name": "Opp Yusof Ishak House",
-		"services": ["A2", "B", "D1"]
+		"name": "Opp. Yusof Ishak House",
+    "services": [ "A2", "B", "D1" ],
+    "road": "Kent Ridge Crescent"
 	},
 	"16181": {
 		"busStopCode": "16181",
 		"latitude": 1.296513,
 		"longitude": 103.772543,
 		"name": "Central Library",
-		"services": ["A1", "A1E", "B", "D1", "BTC", "UT-CLB"]
+    "services": [ "A1", "A1E", "B", "D1", "BTC", "UT-CLB" ],
+    "road": "Kent Ridge Crescent"
 	},
 	"16189": {
 		"busStopCode": "16189",
@@ -88,146 +99,167 @@
 		"latitude": 1.301249,
 		"longitude": 103.773281,
 		"name": "Museum",
-		"services": ["A2", "B", "C", "D1", "D2", "BTC"]
+    "services": [ "A2", "B", "C", "D1", "D2", "BTC" ],
+    "road": "Kent Ridge Crescent"
 	},
 	"16169": {
 		"busStopCode": "16161",
 		"latitude": 1.301039,
 		"longitude": 103.772868,
 		"name": "Raffles Hall",
-		"services": ["B", "C"]
+    "services": [ "B", "C" ],
+    "road": "Kent Ridge Crescent"
 	},
 	"16151": {
 		"busStopCode": "16151",
 		"latitude": 1.30082,
 		"longitude": 103.769905,
 		"name": "The Japanese Primary School",
-		"services": ["B", "C", "BTC"]
+    "services": [ "B", "C", "BTC" ],
+    "road": "Clementi Road"
 	},
 	"16159": {
 		"busStopCode": "16159",
 		"latitude": 1.300573,
 		"longitude": 103.770133,
-		"name": "Opp Block EA",
-		"services": ["B", "C", "BTC"]
+		"name": "Opp. EA",
+    "services": [ "B", "C", "BTC" ],
+    "road": "Kent Ridge Crescent"
 	},
 	"16009": {
 		"busStopCode": "16009",
 		"latitude": 1.294462,
 		"longitude": 103.769756,
 		"name": "Kent Ridge Terminal",
-		"services": ["B", "C"]
+    "services": [ "B", "C" ],
+    "road": "Clementi Road"
 	},
 	"41021": {
 		"busStopCode": "41021",
 		"latitude": 1.322703,
 		"longitude": 103.815840,
 		"name": "Botanic Gardens MRT",
-		"services": ["BTC"]
+    "services": [ "BTC" ],
+    "road": "Bukit Timah Road"
 	},
 	"41029": {
 		"busStopCode": "41029",
 		"latitude": 1.323291,
 		"longitude": 103.816304,
-		"name": "Opp Botanic Gardens MRT",
-		"services": ["BTC"]
+		"name": "Opp. Botanic Gardens MRT",
+    "services": [ "BTC" ],
+    "road": "Bukit Timah Road"
 	},
 	"DER3": {
 		"busStopCode": "DER3",
 		"latitude": 1.319415,
 		"longitude": 103.818188,
-		"name": "BTC - Oei Tiong Ham Building",
-		"services": ["BTC"]
+		"name": "Bukit Timah Campus - Oei Tiong Ham Building",
+    "services": [ "BTC" ],
+    "road": "Bukit Timah Road"
 	},
 	"CL1": {
 		"busStopCode": "CL1",
 		"latitude": 1.303704,
 		"longitude": 103.77477,
 		"name": "University Town",
-		"services": ["D1", "D2", "UT-CLB", "UT-FOS"]
+    "services": [ "D1", "D2", "UT-CLB", "UT-FOS" ],
+    "road": "Kent Ridge Crescent"
 	},
 	"KRD4": {
 		"busStopCode": "KRD4",
 		"latitude": 1.294589,
 		"longitude": 103.770645,
 		"name": "LT13",
-		"services": ["A1", "B", "D1", "BTC"]
+    "services": [ "A1", "B", "D1", "BTC" ],
+    "road": "Kent Ridge Drive"
 	},
 	"KRD5": {
 		"busStopCode": "KRD5",
 		"latitude": 1.295474,
 		"longitude": 103.770619,
-		"name": "Ventus (Opp LT13)",
-		"services": ["A2", "A2E", "B", "D1"]
+		"name": "Ventus (Opp. LT13)",
+    "services": [ "A2", "A2E", "B", "D1" ],
+    "road": "Kent Ridge Drive"
 	},
 	"KRD2": {
 		"busStopCode": "KRD2",
 		"latitude": 1.293529,
 		"longitude": 103.771998,
 		"name": "AS7",
-		"services": ["A1", "B", "D1", "BTC"]
+    "services": [ "A1", "B", "D1", "BTC" ],
+    "road": "Kent Ridge Drive"
 	},
 	"KRD1": {
 		"busStopCode": "KRD1",
 		"latitude": 1.293305,
 		"longitude": 103.772331,
-		"name": "Opp NUSS",
-		"services": ["A2", "D1"]
+		"name": "Opp. NUSS",
+    "services": [ "A2", "D1" ],
+    "road":"Business Link" 
 	},
 	"CD1": {
 		"busStopCode": "CD1",
 		"latitude": 1.294314,
 		"longitude": 103.77369,
 		"name": "COM2",
-		"services": ["A1", "A2", "B", "D1"]
+    "services": [ "A1", "A2", "B", "D1" ],
+    "road": "Computing Drive"
 	},
 	"BL3": {
 		"busStopCode": "BL3",
 		"latitude": 1.293669,
 		"longitude": 103.775108,
 		"name": "BIZ2",
-		"services": ["A1", "A1E", "D1", "BTC"]
+    "services": [ "A1", "A1E", "D1", "BTC" ],
+    "road": "Business Link"
 	},
 	"BL2": {
 		"busStopCode": "BL2",
 		"latitude": 1.293316,
 		"longitude": 103.775233,
-		"name": "Opp HSSML",
-		"services": ["A2", "D1"]
+		"name": "Opp. Hon Sui Sen Memorial Library",
+    "services": [ "A2", "D1" ],
+    "road": "Business Link"
 	},
 	"PGP0": {
 		"busStopCode": "PGP0",
 		"latitude": 1.292151,
 		"longitude": 103.780238,
 		"name": "PGP Terminal",
-		"services": ["A1", "A1E", "A2", "BTC", "D2"]
+    "services": [ "A1", "A1E", "A2", "BTC", "D2" ],
+    "road": "Prince George's Park"
 	},
 	"PGP1": {
 		"busStopCode": "PGP1",
 		"latitude": 1.293126,
 		"longitude": 103.778002,
-		"name": "House 14 and 15",
-		"services": ["A2"]
+		"name": "Houses 14 & 15",
+    "services": [ "A2" ],
+    "road": "Prince George's Park"
 	},
 	"PGP2": {
 		"busStopCode": "PGP2",
 		"latitude": 1.293126,
 		"longitude": 103.778002,
 		"name": "House 7",
-		"services": ["A1"]
+    "services": [ "A1" ],
+    "road": "Prince George's Park"
 	},
 	"PGP3": {
 		"busStopCode": "PGP2",
 		"latitude": 1.293489,
 		"longitude": 103.777396,
 		"name": "House 12",
-		"services": ["A2"]
+    "services": [ "A2" ],
+    "road": "Prince George's Park"
 	},
 	"PGP4": {
 		"busStopCode": "PGP4",
 		"latitude": 1.293841,
 		"longitude": 103.777092,
-		"name": "Opp House 12",
-		"services": ["A1"]
+		"name": "Opp. House 12",
+    "services": [ "A1" ],
+    "road": "Prince George's Park"
 	},
 }

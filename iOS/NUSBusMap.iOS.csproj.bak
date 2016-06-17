@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>NUSBusMap.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>NUSBusMapiOS</AssemblyName>
+    <AssemblyName>NUSBusMap.iOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
