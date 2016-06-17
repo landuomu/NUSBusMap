@@ -38,7 +38,7 @@ namespace NUSBusMap
 				// take firstStop position as initial bus position
 				latitude = BusStops[svc.firstStop].latitude,
 				longitude = BusStops[svc.firstStop].longitude,
-				speed = 10.0
+				speed = 5.0
 			};
 			ActiveBuses.Add (vehiclePlate, bus);
 		}
@@ -64,29 +64,6 @@ namespace NUSBusMap
 				}
 			}
 			return 3;
-		}
-
-		public static void GoToNextCheckpoint (BusOnRoad bor)
-		{
-			var svc = BusSvcs [bor.routeName];
-			if (bor.nextCheckpointEnumerator == null)
-				bor.nextCheckpointEnumerator = svc.checkpoints.GetEnumerator ();
-
-			double longitude = BusStops [svc.firstStop].longitude;
-			double latitude = BusStops [svc.firstStop].latitude;
-
-			// update position based on checkpoint
-			if (bor.nextCheckpointEnumerator.MoveNext ())
-				longitude = (double)bor.nextCheckpointEnumerator.Current;
-			else {
-				RemoveBusOnRoad (bor.vehiclePlate);
-				return;
-			}
-			if (bor.nextCheckpointEnumerator.MoveNext ())
-				latitude = (double)bor.nextCheckpointEnumerator.Current;
-
-			bor.longitude = longitude;
-			bor.latitude = latitude;
 		}
 	}
 }
