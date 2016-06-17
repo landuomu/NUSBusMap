@@ -75,10 +75,7 @@ namespace NUSBusMap
 	        Content = stack;
 
 	        // add random buses for testing
-			BusHelper.AddBusOnRoad ("PC1221", "A1");
-			BusHelper.AddBusOnRoad ("AL1441", "A1E");
-			BusHelper.AddBusOnRoad ("PC1222", "C");
-			BusHelper.AddBusOnRoad ("CS1231", "D2");
+			BusSimulator.DispatchBuses ();
 
 	        // set timer to update bus and current location
 			Device.StartTimer (TimeSpan.FromSeconds(REFRESH_INTERVAL), UpdatePositions);
@@ -153,7 +150,7 @@ namespace NUSBusMap
 				// bor.longitude += rand.NextDouble () * 0.0001 - 0.00005;
 
 				// move bus to next checkpoint on the route for simulation
-				BusHelper.GoToNextCheckpoint (bor);
+				BusSimulator.GoToNextCheckpoint (bor);
 
 				// add pin to map if svc show on map
 				if (BusHelper.BusSvcs [bor.routeName].showOnMap) {

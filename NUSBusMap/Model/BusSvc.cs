@@ -6,8 +6,9 @@ namespace NUSBusMap
 	public class BusSvc
 	{
 		public string routeName { get; set; }
-		public List<string> firstBusTime { get; set; } // [weekday, sat, sun/ph] in 24h format
-		public List<string> lastBusTime { get; set; } // [weekday, sat, sun/ph] in 24h formst
+		public List<string> firstBusTime { get; set; } // [weekday, sat, sun/ph] in "hh:mm" format
+		public List<string> lastBusTime { get; set; } // [weekday, sat, sun/ph] in "hh:mm" format
+		public List<int> freq { get; set; } // [high, mid, low] in mins
 		public string firstStop { get; set; }
 		public string lastStop { get; set; }
 		public List<string> stops { get; set; }
