@@ -10,6 +10,8 @@ namespace NUSBusMap
 {
 	public static class BusHelper
 	{
+		public enum Days { WEEKDAY, SATURDAY, SUNDAY };
+
 		public static Dictionary<string,BusStop> BusStops;
 		public static Dictionary<string,BusSvc> BusSvcs;
 		public static Dictionary<string,BusOnRoad> ActiveBuses;
@@ -27,6 +29,10 @@ namespace NUSBusMap
 		public static void AddBusOnRoad (string vehiclePlate, string routeName) {
 			var svc = BusSvcs[routeName];
 			var stopEnum = svc.stops.GetEnumerator();
+
+			// start from the second bus stop for next stop
+			if (!stopEnum.MoveNext ())
+				return;
 			stopEnum.MoveNext ();
 
 			var bus = new BusOnRoad {
@@ -47,8 +53,12 @@ namespace NUSBusMap
 			return ActiveBuses.Remove (vehiclePlate);
 		}
 
-		public static int GetArrivalTiming (string busStopCode, string routeName) {
-			// TODO: calculate arrival timing based on bus stop and route
+		// return "arr" or "x min" or "not operating"
+		public static string GetArrivalTiming (string busStopCode, string routeName) {
+			if (!IsWithinServiceTiming(routeName))
+				return "not operating";
+
+			// calculate arrival timing based on bus stop and route
 			Position stopPos = new Position ();
 			stopPos.Latitude = BusStops [busStopCode].latitude;
 			stopPos.Longitude = BusStops [busStopCode].longitude;
@@ -63,7 +73,15 @@ namespace NUSBusMap
 					// TODO: think of a better way to calculate
 				}
 			}
-			return 3;
+			return "3 min";
+		}
+
+		public static bool IsWithinServiceTiming(string routeName) {
+			DateTime now = DateTime.Now;
+			TimeSpan currTimeSpan = new TimeSpan (now.Hour, now.Minute, now.Second);
+			BusSvc svc = BusSvcs [routeName];
+			return currTimeSpan.CompareTo (TimeSpan.Parse (svc.firstBusTime[(int)Days.WEEKDAY])) > 0 &&
+			currTimeSpan.CompareTo (TimeSpan.Parse (svc.lastBusTime[(int)Days.WEEKDAY])) < 0;
 		}
 	}
 }

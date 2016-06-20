@@ -19,7 +19,7 @@ namespace NUSBusMap
 		private static BusMap map;
 		private static double currRadius = 0.5;
 		private static double DEFAULT_RADIUS = 0.5;
-		private static int REFRESH_INTERVAL = 3;
+		private static int REFRESH_INTERVAL = 1;
 
 
 	    public MapPage() {
@@ -156,8 +156,10 @@ namespace NUSBusMap
 				if (BusHelper.BusSvcs [bor.routeName].showOnMap) {
 					var description = "Start: " + BusHelper.BusStops [bor.firstStop].name + "\n" +
 					                  "End: " + BusHelper.BusStops [bor.lastStop].name + "\n" +
-					                  "Approaching: " + BusHelper.BusStops [(string)bor.nextStopEnumerator.Current].name + "\n" +
-					                  "In: " + BusHelper.GetArrivalTiming ((string)bor.nextStopEnumerator.Current, bor.routeName);
+					                  //"Approaching: " + BusHelper.BusStops [(string)bor.nextStopEnumerator.Current].name + "\n" +
+					                  "In: " + BusHelper.GetArrivalTiming ((string)bor.nextStopEnumerator.Current, bor.routeName) + "\n" +
+					                  "Distance travelled: " + bor.distanceTravelled + " m" + "\n" +
+					                  "Coordinate: (" + bor.longitude + ", " + bor.latitude + ")";
 					var pin = new Pin {
 						Type = PinType.Place,
 						Position = new Xamarin.Forms.Maps.Position (bor.latitude, bor.longitude),

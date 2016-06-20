@@ -11,9 +11,9 @@
 		"busStopCode": "18339",
 		"latitude": 1.294113,
 		"longitude": 103.785063,
-		"name": "Opp. Kent Ridge MRT",
-    "services": [ "A2", "A2E", "D2" ],
-    "road": "Lower Kent Ridge Road"
+		"name": "Opp Kent Ridge MRT",
+		"services": ["A2", "A2E(AM)", "A2E(PM)", "D2"],
+    	"road": "Lower Kent Ridge Road"
 	},
 	"18301": {
 		"busStopCode": "18301",
@@ -28,8 +28,8 @@
 		"latitude": 1.297538,
 		"longitude": 103.780727,
 		"name": "S17",
-    "services": [ "A2", "A2E", "C", "D2" ],
-    "road": "Lower Kent Ridge Road"
+		"services": ["A2", "A2E(AM)", "A2E(PM)", "C", "D2"],
+    	"road": "Lower Kent Ridge Road"
 	},
 	"18311": {
 		"busStopCode": "18311",
@@ -43,9 +43,9 @@
 		"busStopCode": "18319",
 		"latitude": 1.297602,
 		"longitude": 103.777951,
-		"name": "Opp. University Hall",
-    "services": [ "A1", "C", "D2" ],
-    "road": "Lower Kent Ridge Road"
+		"name": "Opp University Hall",
+		"services": ["A2", "C", "D2"],
+    	"road": "Lower Kent Ridge Road"
 	},
 	"18321": {
 		"busStopCode": "18321",
@@ -92,7 +92,7 @@
 		"latitude": 1.297354,
 		"longitude": 103.772765,
 		"name": "Computer Centre",
-		"services": ["A2", "A2E", "B", "D1"]
+		"services": ["A2", "A2E(AM)", "A2E(PM)", "B", "D1"]
 	},
 	"16161": {
 		"busStopCode": "16161",
@@ -103,7 +103,7 @@
     "road": "Kent Ridge Crescent"
 	},
 	"16169": {
-		"busStopCode": "16161",
+		"busStopCode": "16169",
 		"latitude": 1.301039,
 		"longitude": 103.772868,
 		"name": "Raffles Hall",
@@ -178,9 +178,9 @@
 		"busStopCode": "KRD5",
 		"latitude": 1.295474,
 		"longitude": 103.770619,
-		"name": "Ventus (Opp. LT13)",
-    "services": [ "A2", "A2E", "B", "D1" ],
-    "road": "Kent Ridge Drive"
+		"name": "Ventus (Opp LT13)",
+		"services": ["A2", "A2E(AM)", "A2E(PM)", "B", "D1"],
+    	"road": "Kent Ridge Drive"
 	},
 	"KRD2": {
 		"busStopCode": "KRD2",
@@ -240,14 +240,14 @@
 	},
 	"PGP2": {
 		"busStopCode": "PGP2",
-		"latitude": 1.293126,
-		"longitude": 103.778002,
+		"latitude": 1.293323,
+		"longitude": 103.777859,
 		"name": "House 7",
     "services": [ "A1" ],
     "road": "Prince George's Park"
 	},
 	"PGP3": {
-		"busStopCode": "PGP2",
+		"busStopCode": "PGP3",
 		"latitude": 1.293489,
 		"longitude": 103.777396,
 		"name": "House 12",
