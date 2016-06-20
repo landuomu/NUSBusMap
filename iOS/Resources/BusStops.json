@@ -39,7 +39,7 @@
 		"latitude": 1.297602,
 		"longitude": 103.777951,
 		"name": "Opp University Hall",
-		"services": ["A1", "C", "D2"]
+		"services": ["A2", "C", "D2"]
 	},
 	"18321": {
 		"busStopCode": "18321",
@@ -91,7 +91,7 @@
 		"services": ["A2", "B", "C", "D1", "D2", "BTC"]
 	},
 	"16169": {
-		"busStopCode": "16161",
+		"busStopCode": "16169",
 		"latitude": 1.301039,
 		"longitude": 103.772868,
 		"name": "Raffles Hall",
@@ -211,8 +211,8 @@
 	},
 	"PGP2": {
 		"busStopCode": "PGP2",
-		"latitude": 1.293126,
-		"longitude": 103.778002,
+		"latitude": 1.293323,
+		"longitude": 103.777859,
 		"name": "House 7",
 		"services": ["A1"]
 	},

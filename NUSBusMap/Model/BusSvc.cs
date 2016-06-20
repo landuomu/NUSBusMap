@@ -11,6 +11,7 @@ namespace NUSBusMap
 		public List<int> freq { get; set; } // [high, mid, low] in mins
 		public string firstStop { get; set; }
 		public string lastStop { get; set; }
+		public List<double> distanceBetweenStops { get; set; } // distance travelled from firstStop
 		public List<string> stops { get; set; }
 		public List<double> distanceBetweenCheckpoints { get; set; }
 		public List<double> checkpoints { get; set; } // data of long,lat of points the route passes by, for bus simulation (testing) and route drawing (in future)

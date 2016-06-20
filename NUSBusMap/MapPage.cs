@@ -158,7 +158,8 @@ namespace NUSBusMap
 					                  "End: " + BusHelper.BusStops [bor.lastStop].name + "\n" +
 					                  //"Approaching: " + BusHelper.BusStops [(string)bor.nextStopEnumerator.Current].name + "\n" +
 					                  "In: " + BusHelper.GetArrivalTiming ((string)bor.nextStopEnumerator.Current, bor.routeName) + "\n" +
-					                  "Distance travelled: " + bor.distanceTravelled + " m";
+					                  "Distance travelled: " + bor.distanceTravelled + " m" + "\n" +
+					                  "Coordinate: (" + bor.longitude + ", " + bor.latitude + ")";
 					var pin = new Pin {
 						Type = PinType.Place,
 						Position = new Xamarin.Forms.Maps.Position (bor.latitude, bor.longitude),
