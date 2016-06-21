@@ -69,29 +69,38 @@ namespace NUSBusMap
 			int nextTiming = Int16.MaxValue;
 			int subsequentTiming = Int16.MaxValue;
 			foreach (BusOnRoad bor in ActiveBuses.Values.Where(b => b.routeName.Equals(routeName))) {
-				// get diff of distance travelled by bus and distance between stops for the service
-				// only consider positive value (yet pass by bus stop)
 				if (busStopCode.Equals (bor.firstStop)) {
-					// TODO: get time by schedule for the first stop
+					// TODO: get time by schedule for the first stop (by freq)
 				} else {
+					// get diff of distance travelled by bus and distance between stops for the service
 					var diffDist = svc.distanceBetweenStops [svc.stops.IndexOf (busStopCode) - 1] - bor.distanceTravelled;
+
+					// if arrived bus stop
+					if (diffDist < SettingsVars.MARGIN_OF_ERROR
+					    && ((string)bor.nextStopEnumerator.Current).Equals (busStopCode)) {
+					    // shift next stop indicator
+						bor.nextStopEnumerator.MoveNext ();
+						// TODO: simulate bus stopping
+					}
+
+					// ignore getting time if bus passed stop
 					if (diffDist < 0)
 						continue;
+
 					var time = (int)((diffDist / bor.avgSpeed) / 60); // in min
+					// store the next and subsequent time if lesser
 					if (nextTiming > time) {
 						subsequentTiming = nextTiming;
 						nextTiming = time;
 					} else if (subsequentTiming > time) {
 						subsequentTiming = time;
 					}
-
-
 				}
 			}
 
-			// generate display string of next and subsequent timings
+			// generate display string of next and subsequent timings (ignore if more than 30 min)
 			string display = "";
-			display += (nextTiming == 0) ? "Arr" : (nextTiming > 30) ? "--" : nextTiming + " min";
+			display += (nextTiming == 0) ? "Arr" : ((nextTiming > 30) ? "--" : nextTiming + " min");
 			display += " / ";
 			display += (subsequentTiming == 0) ? "Arr" : (subsequentTiming > 30) ? "--" : subsequentTiming + " min";
 			return display;
