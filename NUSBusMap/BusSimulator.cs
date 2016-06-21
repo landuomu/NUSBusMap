@@ -5,6 +5,9 @@ namespace NUSBusMap
 {
 	public static class BusSimulator
 	{
+		// functions to simulate bus plying on road without actual real-time data
+		// functions which will not be used during actual deployment
+
 //		private static double avgSpeedPeak = 4.0; // in m/s
 //		private static double avgSpeedNonPeak = 5.0; // in m/s
 //		private static double avgBoardingTimePeak = 30; // in secs
@@ -13,7 +16,11 @@ namespace NUSBusMap
 		public static void DispatchBuses() {
 			// set timer for each bus service to dispatch bus at freq (if within service timing)
 			foreach (BusSvc bs in BusHelper.BusSvcs.Values) {
-				Device.StartTimer (TimeSpan.FromSeconds (bs.freq [(int)BusHelper.Days.WEEKDAY]*2), () => {
+				// kickstart first time
+				if (BusHelper.IsWithinServiceTiming(bs.routeName)) 
+					BusHelper.AddBusOnRoad(bs.routeName + "-" + BusHelper.ActiveBuses.Count, bs.routeName);
+
+				Device.StartTimer (TimeSpan.FromMinutes (bs.freq [(int)BusHelper.Days.WEEKDAY]), () => {
 					if (BusHelper.IsWithinServiceTiming(bs.routeName)) {
 						BusHelper.AddBusOnRoad(bs.routeName + "-" + BusHelper.ActiveBuses.Count, bs.routeName);
 						return true;

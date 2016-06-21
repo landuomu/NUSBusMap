@@ -14,7 +14,8 @@ namespace NUSBusMap
 		public IEnumerator nextDistanceEnumerator { get; set; }
 		public double latitude { get; set; }
 		public double longitude { get; set; }
-		public double speed { get; set; }
+		public double avgSpeed { get; set; }
+		public double currSpeed { get; set; }
 		public double distanceTravelled { get; set; }
 	}
 }
