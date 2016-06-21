@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Xamarin.Forms;
 
 namespace NUSBusMap
@@ -13,12 +14,15 @@ namespace NUSBusMap
 //		private static double avgBoardingTimePeak = 30; // in secs
 //		private static double avgBoardingTimeNonPeak = 15; // in secs
 
-		public static void DispatchBuses() {
+		public static void DispatchBuses ()
+		{
 			// set timer for each bus service to dispatch bus at freq (if within service timing)
 			foreach (BusSvc bs in BusHelper.BusSvcs.Values) {
 				// kickstart first time
-				if (BusHelper.IsWithinServiceTiming(bs.routeName)) 
-					BusHelper.AddBusOnRoad(bs.routeName + "-" + BusHelper.ActiveBuses.Count, bs.routeName);
+				if (BusHelper.IsWithinServiceTiming (bs.routeName)) {
+					BusHelper.AddBusOnRoad (bs.routeName + "-" + BusHelper.ActiveBuses.Count, bs.routeName);
+					StartTimerDispatch (bs);
+				}
 
 				Device.StartTimer (TimeSpan.FromMinutes (bs.freq [(int)BusHelper.Days.WEEKDAY]), () => {
 					if (BusHelper.IsWithinServiceTiming(bs.routeName)) {
@@ -54,7 +58,16 @@ namespace NUSBusMap
 			bor.latitude = latitude;
 		}
 
-
+		private static void StartTimerDispatch (BusSvc bs)
+		{
+			// init/reset stopwatch
+			if (bs.timerSinceLastDispatch == null) {
+				bs.timerSinceLastDispatch = new Stopwatch ();
+				bs.timerSinceLastDispatch.Start ();
+			} else {
+				bs.timerSinceLastDispatch.Restart ();
+			}
+		}
 
 
 		//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

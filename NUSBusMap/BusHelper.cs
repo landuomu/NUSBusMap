@@ -70,7 +70,12 @@ namespace NUSBusMap
 			int subsequentTiming = Int16.MaxValue;
 			foreach (BusOnRoad bor in ActiveBuses.Values.Where(b => b.routeName.Equals(routeName))) {
 				if (busStopCode.Equals (bor.firstStop)) {
-					// TODO: get time by schedule for the first stop (by freq)
+					if (svc.timerSinceLastDispatch != null) {
+						// get time by freq for the first stop
+						var timeDiff = svc.freq [(int)Days.WEEKDAY] - (int)(svc.timerSinceLastDispatch.ElapsedMilliseconds / (1000 * 60));
+						nextTiming = timeDiff;
+						subsequentTiming = timeDiff + svc.freq [(int)Days.WEEKDAY];
+					}
 				} else {
 					// get diff of distance travelled by bus and distance between stops for the service
 					var diffDist = svc.distanceBetweenStops [svc.stops.IndexOf (busStopCode) - 1] - bor.distanceTravelled;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace NUSBusMap
 {
@@ -15,7 +16,10 @@ namespace NUSBusMap
 		public List<string> stops { get; set; }
 		public List<double> distanceBetweenCheckpoints { get; set; }
 		public List<double> checkpoints { get; set; } // data of long,lat of points the route passes by, for bus simulation (testing) and route drawing (in future)
+
+		// not in json
 		public bool showOnMap { get; set; }
+		public Stopwatch timerSinceLastDispatch { get; set; }
 	}
 }
 
