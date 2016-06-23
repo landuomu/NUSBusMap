@@ -1,19 +1,30 @@
 ﻿using System;
+using System.Diagnostics;
 using Xamarin.Forms;
 
 namespace NUSBusMap
 {
 	public static class BusSimulator
 	{
+		// functions to simulate bus plying on road without actual real-time data
+		// functions which will not be used during actual deployment
+
 //		private static double avgSpeedPeak = 4.0; // in m/s
 //		private static double avgSpeedNonPeak = 5.0; // in m/s
 //		private static double avgBoardingTimePeak = 30; // in secs
 //		private static double avgBoardingTimeNonPeak = 15; // in secs
 
-		public static void DispatchBuses() {
+		public static void DispatchBuses ()
+		{
 			// set timer for each bus service to dispatch bus at freq (if within service timing)
 			foreach (BusSvc bs in BusHelper.BusSvcs.Values) {
-				Device.StartTimer (TimeSpan.FromSeconds (bs.freq [(int)BusHelper.Days.WEEKDAY]*2), () => {
+				// kickstart first time
+				if (BusHelper.IsWithinServiceTiming (bs.routeName)) {
+					BusHelper.AddBusOnRoad (bs.routeName + "-" + BusHelper.ActiveBuses.Count, bs.routeName);
+					StartTimerDispatch (bs);
+				}
+
+				Device.StartTimer (TimeSpan.FromMinutes (bs.freq [(int)BusHelper.Days.WEEKDAY]), () => {
 					if (BusHelper.IsWithinServiceTiming(bs.routeName)) {
 						BusHelper.AddBusOnRoad(bs.routeName + "-" + BusHelper.ActiveBuses.Count, bs.routeName);
 						return true;
@@ -47,7 +58,16 @@ namespace NUSBusMap
 			bor.latitude = latitude;
 		}
 
-
+		private static void StartTimerDispatch (BusSvc bs)
+		{
+			// init/reset stopwatch
+			if (bs.timerSinceLastDispatch == null) {
+				bs.timerSinceLastDispatch = new Stopwatch ();
+				bs.timerSinceLastDispatch.Start ();
+			} else {
+				bs.timerSinceLastDispatch.Restart ();
+			}
+		}
 
 
 		//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

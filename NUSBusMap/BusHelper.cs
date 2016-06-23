@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using XLabs.Platform.Device;
 using XLabs.Platform;
@@ -44,36 +45,70 @@ namespace NUSBusMap
 				// take firstStop position as initial bus position
 				latitude = BusStops[svc.firstStop].latitude,
 				longitude = BusStops[svc.firstStop].longitude,
-				speed = 5.0
+				avgSpeed = 5.0,
+				currSpeed = 5.0
 			};
 			ActiveBuses.Add (vehiclePlate, bus);
 		}
 
+		// remove bus when bus reaches last stop
 		public static bool RemoveBusOnRoad (string vehiclePlate) {
 			return ActiveBuses.Remove (vehiclePlate);
 		}
 
 		// return "arr" or "x min" or "not operating"
-		public static string GetArrivalTiming (string busStopCode, string routeName) {
-			if (!IsWithinServiceTiming(routeName))
+		public static string GetArrivalTiming (string busStopCode, string routeName)
+		{
+			BusSvc svc = BusSvcs [routeName];
+			BusStop stop = BusStops [busStopCode];
+
+			if (!IsWithinServiceTiming (routeName))
 				return "not operating";
 
-			// calculate arrival timing based on bus stop and route
-			Position stopPos = new Position ();
-			stopPos.Latitude = BusStops [busStopCode].latitude;
-			stopPos.Longitude = BusStops [busStopCode].longitude;
+			// calculate arrival timing (next and subsequent) based on bus stop and route
+			int nextTiming = Int16.MaxValue;
+			int subsequentTiming = Int16.MaxValue;
+			foreach (BusOnRoad bor in ActiveBuses.Values.Where(b => b.routeName.Equals(routeName))) {
+				if (busStopCode.Equals (bor.firstStop)) {
+					if (svc.timerSinceLastDispatch != null) {
+						// get time by freq for the first stop
+						var timeDiff = svc.freq [(int)Days.WEEKDAY] - (int)(svc.timerSinceLastDispatch.ElapsedMilliseconds / (1000 * 60));
+						nextTiming = timeDiff;
+						subsequentTiming = timeDiff + svc.freq [(int)Days.WEEKDAY];
+					}
+				} else {
+					// get diff of distance travelled by bus and distance between stops for the service
+					var diffDist = svc.distanceBetweenStops [svc.stops.IndexOf (busStopCode) - 1] - bor.distanceTravelled;
 
-			int min = Int16.MaxValue;
-			foreach (BusOnRoad bor in ActiveBuses.Values) {
-				if (bor.routeName.Equals(routeName)) {
-					Position busPos = new Position ();
-					busPos.Latitude = bor.latitude;
-					busPos.Longitude = bor.longitude;
+					// if arrived bus stop
+					if (diffDist < SettingsVars.MARGIN_OF_ERROR
+					    && ((string)bor.nextStopEnumerator.Current).Equals (busStopCode)) {
+					    // shift next stop indicator
+						bor.nextStopEnumerator.MoveNext ();
+						// TODO: simulate bus stopping
+					}
 
-					// TODO: think of a better way to calculate
+					// ignore getting time if bus passed stop
+					if (diffDist < 0)
+						continue;
+
+					var time = (int)((diffDist / bor.avgSpeed) / 60); // in min
+					// store the next and subsequent time if lesser
+					if (nextTiming > time) {
+						subsequentTiming = nextTiming;
+						nextTiming = time;
+					} else if (subsequentTiming > time) {
+						subsequentTiming = time;
+					}
 				}
 			}
-			return "3 min";
+
+			// generate display string of next and subsequent timings (ignore if more than 30 min)
+			string display = "";
+			display += (nextTiming == 0) ? "Arr" : ((nextTiming > 30) ? "--" : nextTiming + " min");
+			display += " / ";
+			display += (subsequentTiming == 0) ? "Arr" : (subsequentTiming > 30) ? "--" : subsequentTiming + " min";
+			return display;
 		}
 
 		public static bool IsWithinServiceTiming(string routeName) {
