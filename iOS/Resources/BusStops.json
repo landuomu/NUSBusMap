@@ -131,7 +131,7 @@
 		"latitude": 1.294462,
 		"longitude": 103.769756,
 		"name": "Kent Ridge Terminal",
-	    "services": [ "B", "C" ],
+	    "services": [ "B", "C", "BTC" ],
 	    "road": "Clementi Road"
 	},
 	"41021": {

@@ -34,7 +34,7 @@ namespace NUSBusMap
 	        // shift to current location if possible (activate only for device testing)
 			// ShiftToCurrentLocation ();
 
-	        // slider to change radius from 0.1 - 0.9 km
+	        // slider to change radius from 0.1 - 0.9 km (for simulator testing)
 			var slider = new Slider (1, 9, 5);
 			slider.ValueChanged += (sender, e) => {
 			    var zoomLevel = e.NewValue; // between 1 and 9
@@ -136,8 +136,6 @@ namespace NUSBusMap
 					                  "End: " + BusHelper.BusStops [bor.lastStop].name + "\n" +
 					                  "Approaching: " + BusHelper.BusStops [(string)bor.nextStopEnumerator.Current].name + "\n" +
 					                  "In: " + BusHelper.GetArrivalTiming ((string)bor.nextStopEnumerator.Current, bor.routeName) + "\n";
-					                  //"Distance travelled: " + bor.distanceTravelled + " m" + "\n" +
-					                  //"Coordinate: (" + bor.longitude + ", " + bor.latitude + ")";
 					var pin = new Pin {
 						Type = PinType.Place,
 						Position = new Xamarin.Forms.Maps.Position (bor.latitude, bor.longitude),
@@ -175,7 +173,7 @@ namespace NUSBusMap
 				var pin = new Pin {
 		            Type = PinType.Place,
 					Position = new Xamarin.Forms.Maps.Position(busStop.latitude, busStop.longitude),
-		            Label = busStop.name + "-" + busStop.busStopCode,
+		            Label = busStop.name + " - " + busStop.busStopCode,
 					Address = description
 		        };
 		        var stop = new CustomPin {
