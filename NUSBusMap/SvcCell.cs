@@ -9,15 +9,21 @@ namespace NUSBusMap
 	{
 		public SvcCell (string svc, EventHandler<ToggledEventArgs> onToggleSvc, EventHandler onClickInfo)
 		{
-			var stack = new StackLayout {
-				Orientation = StackOrientation.Horizontal,
-				VerticalOptions = LayoutOptions.Center,
-				Padding = new Thickness(10)
+			var grid = new Grid {
+			    ColumnSpacing = 0,
+			    RowSpacing = 0,
+			    Padding = new Thickness(10),
+			    RowDefinitions = { new RowDefinition { Height = new GridLength(1, GridUnitType.Star) } },
+			    ColumnDefinitions = {
+			        new ColumnDefinition { Width = new GridLength(4, GridUnitType.Star) },
+			        new ColumnDefinition { Width = new GridLength(4, GridUnitType.Star) },
+			        new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star) }
+			    },
+			    HorizontalOptions = LayoutOptions.Center
 			};
 
-			Label serviceLabel = new Label {
-				Text = svc,
-				TextColor = Color.Blue,
+			Image serviceImage = new Image {
+				Source = svc + ".png",
 				HorizontalOptions = LayoutOptions.StartAndExpand,
 				VerticalOptions = LayoutOptions.Center
 			};
@@ -37,10 +43,10 @@ namespace NUSBusMap
 			};
 			svcInfoBtn.Clicked += onClickInfo;
 
-			stack.Children.Add (serviceLabel);
-			stack.Children.Add (switcher);
-			stack.Children.Add (svcInfoBtn);
-			View = stack;
+			grid.Children.Add (serviceImage, 0, 0);
+			grid.Children.Add (switcher, 1, 0);
+			grid.Children.Add (svcInfoBtn, 2, 0);
+			View = grid;
 		}
 	}
 }
