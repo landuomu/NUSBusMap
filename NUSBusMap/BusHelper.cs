@@ -61,10 +61,20 @@ namespace NUSBusMap
 		public static string GetArrivalTiming (string vehiclePlate) {
 			BusOnRoad bor = ActiveBuses [vehiclePlate];
 			BusSvc svc = BusSvcs [bor.routeName];
+			string busStopCode = (string)bor.nextStopEnumerator.Current;
 
 			// get diff of distance travelled by bus and distance between stops for the service
-			var diffDist = svc.distanceBetweenStops [svc.stops.IndexOf ((string)bor.nextStopEnumerator.Current) - 1] - bor.distanceTravelled;
+			var diffDist = svc.distanceBetweenStops [svc.stops.IndexOf (busStopCode) - 1] - bor.distanceTravelled;
 			var time = (int)((diffDist / bor.avgSpeed) / 60); // in min
+
+			// if arrived bus stop
+			if (diffDist < SettingsVars.MARGIN_OF_ERROR
+			    && ((string)bor.nextStopEnumerator.Current).Equals (busStopCode)) {
+			    // shift next stop indicator
+			    // if no more stop, finish service
+				if (!bor.nextStopEnumerator.MoveNext ())
+					bor.finished = true;
+			}
 
 			return (time == 0) ? "Arr" : ( (time > 30) ? "--" : time + " min" );
 		}
@@ -93,14 +103,6 @@ namespace NUSBusMap
 				} else {
 					// get diff of distance travelled by bus and distance between stops for the service
 					var diffDist = svc.distanceBetweenStops [svc.stops.IndexOf (busStopCode) - 1] - bor.distanceTravelled;
-
-					// if arrived bus stop
-					if (diffDist < SettingsVars.MARGIN_OF_ERROR
-					    && ((string)bor.nextStopEnumerator.Current).Equals (busStopCode)) {
-					    // shift next stop indicator
-						bor.nextStopEnumerator.MoveNext ();
-						// TODO: simulate bus stopping
-					}
 
 					// ignore getting time if bus passed stop
 					if (diffDist < 0)

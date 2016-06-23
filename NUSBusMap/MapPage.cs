@@ -152,6 +152,12 @@ namespace NUSBusMap
 				}
 			}
 
+			// remove buses which has finished plying
+			List<BusOnRoad> finishedBuses = BusHelper.ActiveBuses.Values.Where (bor => bor.finished).ToList();
+			foreach (BusOnRoad bor in finishedBuses)
+				BusHelper.ActiveBuses.Remove(bor.vehiclePlate);
+
+			// continue updating
 			return true;
 	    }
 
@@ -185,6 +191,7 @@ namespace NUSBusMap
 				map.StopPins.Add (stop);
 			}
 
+			// continue updating
 			return true;
 	    }
 	}

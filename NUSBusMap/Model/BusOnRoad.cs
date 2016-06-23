@@ -17,6 +17,7 @@ namespace NUSBusMap
 		public double avgSpeed { get; set; }
 		public double currSpeed { get; set; }
 		public double distanceTravelled { get; set; }
+		public bool finished { get; set; }
 	}
 }
 
