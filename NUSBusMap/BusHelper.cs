@@ -56,7 +56,21 @@ namespace NUSBusMap
 			return ActiveBuses.Remove (vehiclePlate);
 		}
 
-		// return "arr" or "x min" or "not operating"
+		// return "arr" or "x min" of bus reaching next stop
+		// to show on bus on road
+		public static string GetArrivalTiming (string vehiclePlate) {
+			BusOnRoad bor = ActiveBuses [vehiclePlate];
+			BusSvc svc = BusSvcs [bor.routeName];
+
+			// get diff of distance travelled by bus and distance between stops for the service
+			var diffDist = svc.distanceBetweenStops [svc.stops.IndexOf ((string)bor.nextStopEnumerator.Current) - 1] - bor.distanceTravelled;
+			var time = (int)((diffDist / bor.avgSpeed) / 60); // in min
+
+			return (time == 0) ? "Arr" : ( (time > 30) ? "--" : time + " min" );
+		}
+
+		// return "arr" or "x min" or "not operating" of next and subsequent bus timing
+		// to show on bus stop
 		public static string GetArrivalTiming (string busStopCode, string routeName)
 		{
 			BusSvc svc = BusSvcs [routeName];
