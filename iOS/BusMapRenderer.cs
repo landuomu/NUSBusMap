@@ -76,7 +76,7 @@ namespace NUSBusMap.iOS
 
 			// create custom callout with bus info
 			// set background for callout
-			var frame = new CGRect (0, 0, 200, 100);
+			var frame = new CGRect (0, 0, 200, 200);
 			customPinView = new UIView { 
 				Frame = frame,
 				BackgroundColor = new UIColor(0.7f,0.8f,0.7f,0.8f),

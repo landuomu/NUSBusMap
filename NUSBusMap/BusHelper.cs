@@ -41,6 +41,8 @@ namespace NUSBusMap
 				routeName = routeName,
 				firstStop = svc.firstStop,
 				lastStop = svc.lastStop,
+				loopStop = svc.loopStop,
+				stopCounter = 0,
 				nextStopEnumerator = stopEnum,
 				// take firstStop position as initial bus position
 				latitude = BusStops[svc.firstStop].latitude,
@@ -64,7 +66,8 @@ namespace NUSBusMap
 			string busStopCode = (string)bor.nextStopEnumerator.Current;
 
 			// get diff of distance travelled by bus and distance between stops for the service
-			var diffDist = svc.distanceBetweenStops [svc.stops.IndexOf (busStopCode) - 1] - bor.distanceTravelled;
+			// FIXME: bug if svc stops at same bus stop twice
+			var diffDist = svc.distanceBetweenStops [bor.stopCounter] - bor.distanceTravelled;
 			var time = (int)((diffDist / bor.avgSpeed) / 60); // in min
 
 			// if arrived bus stop
@@ -72,8 +75,11 @@ namespace NUSBusMap
 			    && ((string)bor.nextStopEnumerator.Current).Equals (busStopCode)) {
 			    // shift next stop indicator
 			    // if no more stop, finish service
+			    // else, keep counting
 				if (!bor.nextStopEnumerator.MoveNext ())
 					bor.finished = true;
+				else 
+					bor.stopCounter++;
 			}
 
 			return (time == 0) ? "Arr" : ( (time > 30) ? "--" : time + " min" );
@@ -81,7 +87,7 @@ namespace NUSBusMap
 
 		// return "arr" or "x min" or "not operating" of next and subsequent bus timing
 		// to show on bus stop
-		public static string GetArrivalTiming (string busStopCode, string routeName)
+		public static string GetArrivalTiming (string busStopCode, string routeName, string loop = "" /* "BEFORE" or "AFTER" if repeatedService*/)
 		{
 			BusSvc svc = BusSvcs [routeName];
 			BusStop stop = BusStops [busStopCode];
@@ -93,16 +99,22 @@ namespace NUSBusMap
 			int nextTiming = Int16.MaxValue;
 			int subsequentTiming = Int16.MaxValue;
 			foreach (BusOnRoad bor in ActiveBuses.Values.Where(b => b.routeName.Equals(routeName))) {
+				// ignore buses of wrong direction for repeated services case
+				if ((loop.Equals ("BEFORE") && bor.stopCounter > svc.stops.IndexOf (svc.loopStop)) ||
+				    (loop.Equals ("AFTER") && bor.stopCounter < svc.stops.IndexOf (svc.loopStop)))
+					continue;
+
 				if (busStopCode.Equals (bor.firstStop)) {
 					if (svc.timerSinceLastDispatch != null) {
-						// get time by freq for the first stop
+						// get time by freq for the first stop (ignore negative)
 						var timeDiff = svc.freq [(int)Days.WEEKDAY] - (int)(svc.timerSinceLastDispatch.ElapsedMilliseconds / (1000 * 60));
-						nextTiming = timeDiff;
-						subsequentTiming = timeDiff + svc.freq [(int)Days.WEEKDAY];
+						if (timeDiff >= 0) nextTiming = timeDiff;
+						if (timeDiff + svc.freq [(int)Days.WEEKDAY] >= 0) subsequentTiming = timeDiff + svc.freq [(int)Days.WEEKDAY];
 					}
 				} else {
 					// get diff of distance travelled by bus and distance between stops for the service
-					var diffDist = svc.distanceBetweenStops [svc.stops.IndexOf (busStopCode) - 1] - bor.distanceTravelled;
+					var index = (loop.Equals("AFTER") ? svc.stops.LastIndexOf (busStopCode) - 1 : svc.stops.IndexOf(busStopCode) - 1);
+					var diffDist = svc.distanceBetweenStops [index] - bor.distanceTravelled;
 
 					// ignore getting time if bus passed stop
 					if (diffDist < 0)
@@ -128,11 +140,12 @@ namespace NUSBusMap
 		}
 
 		public static bool IsWithinServiceTiming(string routeName) {
-			DateTime now = DateTime.Now;
-			TimeSpan currTimeSpan = new TimeSpan (now.Hour, now.Minute, now.Second);
-			BusSvc svc = BusSvcs [routeName];
-			return currTimeSpan.CompareTo (TimeSpan.Parse (svc.firstBusTime[(int)Days.WEEKDAY])) > 0 &&
-			currTimeSpan.CompareTo (TimeSpan.Parse (svc.lastBusTime[(int)Days.WEEKDAY])) < 0;
+//			DateTime now = DateTime.Now;
+//			TimeSpan currTimeSpan = new TimeSpan (now.Hour, now.Minute, now.Second);
+//			BusSvc svc = BusSvcs [routeName];
+//			return currTimeSpan.CompareTo (TimeSpan.Parse (svc.firstBusTime[(int)Days.WEEKDAY])) > 0 &&
+//			currTimeSpan.CompareTo (TimeSpan.Parse (svc.lastBusTime[(int)Days.WEEKDAY])) < 0;
+			return true;
 		}
 	}
 }

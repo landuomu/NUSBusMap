@@ -100,6 +100,7 @@
 		"longitude": 103.773281,
 		"name": "Museum",
 	    "services": [ "A2", "B", "C", "D1", "D2", "BTC" ],
+		"repeatedServices": ["BTC"],
 	    "road": "Kent Ridge Crescent"
 	},
 	"16169": {
@@ -204,6 +205,7 @@
 		"longitude": 103.77369,
 		"name": "COM2",
 	    "services": [ "A1", "A2", "B", "D1" ],
+		"repeatedServices": ["D1"],
 	    "road": "Computing Drive"
 	},
 	"BL3": {

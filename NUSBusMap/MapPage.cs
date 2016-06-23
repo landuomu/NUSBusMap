@@ -161,7 +161,8 @@ namespace NUSBusMap
 			return true;
 	    }
 
-	    private bool UpdateStopPins() {
+	    private bool UpdateStopPins ()
+		{
 			// skip update pins if map is freezed
 			if (FreezeMap)
 				return true;
@@ -172,10 +173,20 @@ namespace NUSBusMap
 			map.StopPins.Clear ();
 
 			// add stop pins, with change in arrivatl timing
-	        foreach (BusStop busStop in BusHelper.BusStops.Values) {
-	        	var description = "";
-	        	foreach (string svc in busStop.services) 
-					description += svc + ": " + BusHelper.GetArrivalTiming (busStop.busStopCode, svc) + "\n";
+			foreach (BusStop busStop in BusHelper.BusStops.Values) {
+				var description = "";
+				foreach (string svc in busStop.services) {
+					// handle repeated service in bus stop case
+					// show timing for both directions
+					if (busStop.repeatedServices != null && busStop.repeatedServices.Contains (svc)) {
+						description += svc + "(to " + BusHelper.BusStops[BusHelper.BusSvcs[svc].loopStop].name + "): ";
+						description += BusHelper.GetArrivalTiming (busStop.busStopCode, svc, "BEFORE") + "\n";
+						description += svc + "(to " + BusHelper.BusStops[BusHelper.BusSvcs[svc].lastStop].name + "): ";
+						description += BusHelper.GetArrivalTiming (busStop.busStopCode, svc, "AFTER") + "\n";
+					} else {
+						description += svc + ": " + BusHelper.GetArrivalTiming (busStop.busStopCode, svc) + "\n";
+					}
+				}
 				var pin = new Pin {
 		            Type = PinType.Place,
 					Position = new Xamarin.Forms.Maps.Position(busStop.latitude, busStop.longitude),
