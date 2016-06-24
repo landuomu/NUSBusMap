@@ -104,7 +104,8 @@ namespace NUSBusMap
 				    (loop.Equals ("AFTER") && bor.stopCounter < svc.stops.IndexOf (svc.loopStop)))
 					continue;
 
-				if (busStopCode.Equals (bor.firstStop)) {
+				// first bus stop case
+				if (busStopCode.Equals (bor.firstStop) && bor.stopCounter == 0) {
 					if (svc.timerSinceLastDispatch != null) {
 						// get time by freq for the first stop (ignore negative)
 						var timeDiff = svc.freq [(int)Days.WEEKDAY] - (int)(svc.timerSinceLastDispatch.ElapsedMilliseconds / (1000 * 60));
@@ -113,7 +114,8 @@ namespace NUSBusMap
 					}
 				} else {
 					// get diff of distance travelled by bus and distance between stops for the service
-					var index = (loop.Equals("AFTER") ? svc.stops.LastIndexOf (busStopCode) - 1 : svc.stops.IndexOf(busStopCode) - 1);
+					// count from back for case after loop (repeated service) or last stop
+					var index = (loop.Equals("AFTER") || bor.stopCounter >= svc.stops.Count - 2) ? svc.stops.LastIndexOf (busStopCode) - 1 : svc.stops.IndexOf(busStopCode) - 1;
 					var diffDist = svc.distanceBetweenStops [index] - bor.distanceTravelled;
 
 					// ignore getting time if bus passed stop
@@ -140,12 +142,11 @@ namespace NUSBusMap
 		}
 
 		public static bool IsWithinServiceTiming(string routeName) {
-//			DateTime now = DateTime.Now;
-//			TimeSpan currTimeSpan = new TimeSpan (now.Hour, now.Minute, now.Second);
-//			BusSvc svc = BusSvcs [routeName];
-//			return currTimeSpan.CompareTo (TimeSpan.Parse (svc.firstBusTime[(int)Days.WEEKDAY])) > 0 &&
-//			currTimeSpan.CompareTo (TimeSpan.Parse (svc.lastBusTime[(int)Days.WEEKDAY])) < 0;
-			return true;
+			DateTime now = DateTime.Now;
+			TimeSpan currTimeSpan = new TimeSpan (now.Hour, now.Minute, now.Second);
+			BusSvc svc = BusSvcs [routeName];
+			return currTimeSpan.CompareTo (TimeSpan.Parse (svc.firstBusTime[(int)Days.WEEKDAY])) > 0 &&
+			currTimeSpan.CompareTo (TimeSpan.Parse (svc.lastBusTime[(int)Days.WEEKDAY])) < 0;
 		}
 	}
 }
