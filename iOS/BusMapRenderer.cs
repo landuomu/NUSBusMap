@@ -19,6 +19,7 @@ namespace NUSBusMap.iOS
 		UIView customPinView;
 		List<CustomPin> busPins;
 		List<CustomPin> stopPins;
+		CustomPin currPin;
 
 		// event called when element is added/removed
 		protected override void OnElementChanged (ElementChangedEventArgs<View> e)
@@ -37,6 +38,7 @@ namespace NUSBusMap.iOS
 				var nativeMap = Control as MKMapView;
 				busPins = formsMap.BusPins;
 				stopPins = formsMap.StopPins;
+				currPin = formsMap.CurrPin;
 
 				nativeMap.GetViewForAnnotation = GetViewForAnnotation;
 				nativeMap.DidSelectAnnotationView += OnDidSelectAnnotationView;
@@ -52,8 +54,8 @@ namespace NUSBusMap.iOS
 			if (annotation is MKUserLocation)
 				return null;
 			
-			var anno = annotation as MKPointAnnotation;
-			var customPin = GetCustomPin (anno);
+			// var anno = annotation as MKPointAnnotation;
+			var customPin = GetCustomPin (annotation);
 			if (customPin == null) {
 				throw new Exception ("Custom pin not found");
 			}
@@ -72,6 +74,10 @@ namespace NUSBusMap.iOS
 		// event called when user clicks on pin, show annotation view (details of the pin)
 		void OnDidSelectAnnotationView (object sender, MKAnnotationViewEventArgs e)
 		{
+			// no annotation view for current position pin
+			if (e.View.Annotation.GetType().Equals(PinType.Generic))
+				return;
+
 			// centralise map and freeze map updates
 			MapPage.CentraliseMap (new Position(e.View.Annotation.Coordinate.Latitude, 
 									e.View.Annotation.Coordinate.Longitude));
@@ -115,7 +121,7 @@ namespace NUSBusMap.iOS
 		}
 
 		// get CustomPin object from annotation
-		CustomPin GetCustomPin (MKPointAnnotation annotation)
+		CustomPin GetCustomPin (IMKAnnotation annotation)
 		{
 			var position = new Position (annotation.Coordinate.Latitude, annotation.Coordinate.Longitude);
 			foreach (var pin in busPins) {
@@ -128,7 +134,10 @@ namespace NUSBusMap.iOS
 					return pin;
 				}
 			}
-			return null;
+
+			// position neither bus nor stop, is person (current location)
+			// return custom pin for person
+			return currPin;
 		}
 	}
 }

@@ -32,21 +32,36 @@ namespace NUSBusMap
 	            };
 
 	        // shift to current location if possible (activate only for device testing)
-			// ShiftToCurrentLocation ();
+	        // update current location
+
+			// create pin for current location
+			map.CurrPin = new CustomPin {
+				Pin = new Pin {
+					Type = PinType.Generic,
+					Position = currLocation,
+					Label = "You are here",
+					Address = ""
+				},
+				Id = "person",
+				Url = "person.png"
+			};
+
+			ShiftToCurrentLocation ();
+			Device.StartTimer (TimeSpan.FromSeconds(SettingsVars.REFRESH_POS_INTERVAL), ShiftToCurrentLocation);
 
 	        // slider to change radius from 0.1 - 0.9 km (for simulator testing, not needed for device testing)
-			var slider = new Slider (1, 9, 5);
-			slider.ValueChanged += (sender, e) => {
-			    var zoomLevel = e.NewValue; // between 1 and 9
-			    currRadius = (SettingsVars.MEAN_MAP_RADIUS * 2) - (zoomLevel/(SettingsVars.MEAN_MAP_RADIUS * 20));
-			    map.MoveToRegion(MapSpan.FromCenterAndRadius(
-			    	map.VisibleRegion.Center, Distance.FromKilometers(currRadius)));
-			};
+//			var slider = new Slider (1, 9, 5);
+//			slider.ValueChanged += (sender, e) => {
+//			    var zoomLevel = e.NewValue; // between 1 and 9
+//			    currRadius = (SettingsVars.MEAN_MAP_RADIUS * 2) - (zoomLevel/(SettingsVars.MEAN_MAP_RADIUS * 20));
+//			    map.MoveToRegion(MapSpan.FromCenterAndRadius(
+//			    	map.VisibleRegion.Center, Distance.FromKilometers(currRadius)));
+//			};
 
 			// add map and slider to stack layout
 	        var stack = new StackLayout { Spacing = 0 };
 	        stack.Children.Add(map);
-			stack.Children.Add(slider);
+//			stack.Children.Add(slider);
 
 			Icon = "MapTabIcon.png";
 			Title = "Map";
@@ -74,7 +89,7 @@ namespace NUSBusMap
 	    }
 
 	    // after getting current position, if successful, centralise the map to current position
-		private void ShiftToCurrentLocation () {
+		private bool ShiftToCurrentLocation () {
 			GetCurrentPosition ().ContinueWith(t => {
 	            if (t.IsFaulted)
 	            {
@@ -88,9 +103,25 @@ namespace NUSBusMap
 	            {
 	                currLocation = new Xamarin.Forms.Maps.Position (t.Result.Latitude, t.Result.Longitude);
 
-	                map.MoveToRegion(MapSpan.FromCenterAndRadius(currLocation, Distance.FromKilometers(SettingsVars.MEAN_MAP_RADIUS)));
+	                // update pin for current location
+					map.CurrPin = new CustomPin {
+						Pin = new Pin {
+							Type = PinType.Generic,
+							Position = currLocation,
+							Label = "You are here",
+							Address = ""
+						},
+						Id = "person",
+						Url = "person.png"
+					};
+
+	                // centralise map to current position
+	                // map.MoveToRegion(MapSpan.FromCenterAndRadius(currLocation, Distance.FromKilometers(SettingsVars.MEAN_MAP_RADIUS)));
 	            }
 	        }, TaskScheduler.FromCurrentSynchronizationContext ());
+
+	        // continue updating
+			return true;
 	    }
 
 	    // get current position of device using XLabs Geolocation service
