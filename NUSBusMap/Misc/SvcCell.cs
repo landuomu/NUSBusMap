@@ -9,6 +9,9 @@ namespace NUSBusMap
 	{
 		public SvcCell (string svc, EventHandler<ToggledEventArgs> onToggleSvc, EventHandler onClickInfo)
 		{
+			// structure: row to be shown in service page
+			// with routeName (in image), switch to show/hide bus service in map, and info button to go to bus route info page
+
 			var grid = new Grid {
 			    ColumnSpacing = 0,
 			    RowSpacing = 0,

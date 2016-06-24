@@ -2,29 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using XLabs.Platform.Device;
-using XLabs.Platform;
-using XLabs.Ioc;
-using XLabs.Platform.Services.Geolocation; // to calculate position
-
 namespace NUSBusMap
 {
 	public static class BusHelper
 	{
+		// enum for different kind of days for diff bus freq
 		public enum Days { WEEKDAY, SATURDAY, SUNDAY };
 
 		public static Dictionary<string,BusStop> BusStops;
 		public static Dictionary<string,BusSvc> BusSvcs;
 		public static Dictionary<string,BusOnRoad> ActiveBuses;
 
+		// init dictionaries
 		public static void LoadBusData ()
 		{
 			BusStops = JsonLoader.LoadStops();
 			BusSvcs = JsonLoader.LoadSvcs();
 			ActiveBuses = new Dictionary<string,BusOnRoad> ();
 		}
-
-		// TODO: helper methods to extract specific bus data
 
 		// add bus when bus starts to ply on road
 		public static void AddBusOnRoad (string vehiclePlate, string routeName) {
@@ -36,7 +31,8 @@ namespace NUSBusMap
 				return;
 			stopEnum.MoveNext ();
 
-			var bus = new BusOnRoad {
+			// construct bor object
+			var bor = new BusOnRoad {
 				vehiclePlate = vehiclePlate,
 				routeName = routeName,
 				firstStop = svc.firstStop,
@@ -48,9 +44,11 @@ namespace NUSBusMap
 				latitude = BusStops[svc.firstStop].latitude,
 				longitude = BusStops[svc.firstStop].longitude,
 				avgSpeed = 5.0,
-				currSpeed = 5.0
+				currSpeed = 5.0,
+				distanceTravelled = 0.0,
+				finished = false
 			};
-			ActiveBuses.Add (vehiclePlate, bus);
+			ActiveBuses.Add (vehiclePlate, bor);
 		}
 
 		// remove bus when bus reaches last stop
@@ -82,12 +80,14 @@ namespace NUSBusMap
 					bor.stopCounter++;
 			}
 
+			// generate display string
 			return (time == 0) ? "Arr" : ( (time > 30) ? "--" : time + " min" );
 		}
 
 		// return "arr" or "x min" or "not operating" of next and subsequent bus timing
+		// of each bus service serving the bus stop
 		// to show on bus stop
-		public static string GetArrivalTiming (string busStopCode, string routeName, string loop = "" /* "BEFORE" or "AFTER" if repeatedService*/)
+		public static string GetArrivalTiming (string busStopCode, string routeName, string loop = "" /* optional, "BEFORE" or "AFTER" if repeatedService*/)
 		{
 			BusSvc svc = BusSvcs [routeName];
 			BusStop stop = BusStops [busStopCode];
@@ -141,6 +141,7 @@ namespace NUSBusMap
 			return display;
 		}
 
+		// return true if current time between first bus and last bus timing
 		public static bool IsWithinServiceTiming(string routeName) {
 			DateTime now = DateTime.Now;
 			TimeSpan currTimeSpan = new TimeSpan (now.Hour, now.Minute, now.Second);
