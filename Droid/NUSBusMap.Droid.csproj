@@ -164,5 +164,18 @@
     <BundleResource Include="Resources\drawable\BusTabIcon.png" />
     <BundleResource Include="Resources\drawable\Info.png" />
     <BundleResource Include="Resources\drawable\MapTabIcon.png" />
+    <BundleResource Include="Resources\drawable\A1.png" />
+    <BundleResource Include="Resources\drawable\A1E.png" />
+    <BundleResource Include="Resources\drawable\A2.png" />
+    <BundleResource Include="Resources\drawable\A2E%28AM%29.png" />
+    <BundleResource Include="Resources\drawable\A2E%28PM%29.png" />
+    <BundleResource Include="Resources\drawable\B.png" />
+    <BundleResource Include="Resources\drawable\BTC.png" />
+    <BundleResource Include="Resources\drawable\C.png" />
+    <BundleResource Include="Resources\drawable\D1.png" />
+    <BundleResource Include="Resources\drawable\D2.png" />
+    <BundleResource Include="Resources\drawable\stop.png" />
+    <BundleResource Include="Resources\drawable\UT-CLB.png" />
+    <BundleResource Include="Resources\drawable\UT-FOS.png" />
   </ItemGroup>
 </Project>

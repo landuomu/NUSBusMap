@@ -19,7 +19,9 @@ namespace NUSBusMap.iOS
 		UIView customPinView;
 		List<CustomPin> busPins;
 		List<CustomPin> stopPins;
+		CustomPin currPin;
 
+		// event called when element is added/removed
 		protected override void OnElementChanged (ElementChangedEventArgs<View> e)
 		{
 			base.OnElementChanged (e);
@@ -36,6 +38,7 @@ namespace NUSBusMap.iOS
 				var nativeMap = Control as MKMapView;
 				busPins = formsMap.BusPins;
 				stopPins = formsMap.StopPins;
+				currPin = formsMap.CurrPin;
 
 				nativeMap.GetViewForAnnotation = GetViewForAnnotation;
 				nativeMap.DidSelectAnnotationView += OnDidSelectAnnotationView;
@@ -43,6 +46,7 @@ namespace NUSBusMap.iOS
 			}
 		}
 
+		// init function when pin is added, allow pin to add custom view
 		MKAnnotationView GetViewForAnnotation (MKMapView mapView, IMKAnnotation annotation)
 		{
 			MKAnnotationView annotationView = null;
@@ -50,8 +54,8 @@ namespace NUSBusMap.iOS
 			if (annotation is MKUserLocation)
 				return null;
 			
-			var anno = annotation as MKPointAnnotation;
-			var customPin = GetCustomPin (anno);
+			// var anno = annotation as MKPointAnnotation;
+			var customPin = GetCustomPin (annotation);
 			if (customPin == null) {
 				throw new Exception ("Custom pin not found");
 			}
@@ -67,8 +71,13 @@ namespace NUSBusMap.iOS
 			return annotationView;
 		}
 
+		// event called when user clicks on pin, show annotation view (details of the pin)
 		void OnDidSelectAnnotationView (object sender, MKAnnotationViewEventArgs e)
 		{
+			// no annotation view for current position pin
+			if (e.View.Annotation.GetType().Equals(PinType.Generic))
+				return;
+
 			// centralise map and freeze map updates
 			MapPage.CentraliseMap (new Position(e.View.Annotation.Coordinate.Latitude, 
 									e.View.Annotation.Coordinate.Longitude));
@@ -79,10 +88,10 @@ namespace NUSBusMap.iOS
 			var frame = new CGRect (0, 0, 200, 200);
 			customPinView = new UIView { 
 				Frame = frame,
-				BackgroundColor = new UIColor(0.8f,0.8f,0.8f,0.3f),
+				BackgroundColor = new UIColor(0.7f,0.8f,0.7f,0.8f),
 				Center = new CGPoint (0, -(e.View.Frame.Height + 20))
 			};
-			customPinView.Layer.BorderColor = new CGColor(0,0,0,50);
+			customPinView.Layer.BorderColor = new CGColor(0,0,0,80);
 			customPinView.Layer.BorderWidth = 1f;
 			customPinView.Layer.CornerRadius = 2f;
 
@@ -100,6 +109,7 @@ namespace NUSBusMap.iOS
 			e.View.AddSubview (customPinView);
 		}
 
+		// event called when user deselects pin, clean up
 		void OnDidDeselectAnnotationView (object sender, MKAnnotationViewEventArgs e)
 		{
 			if (!e.View.Selected) {
@@ -110,7 +120,8 @@ namespace NUSBusMap.iOS
 			}
 		}
 
-		CustomPin GetCustomPin (MKPointAnnotation annotation)
+		// get CustomPin object from annotation
+		CustomPin GetCustomPin (IMKAnnotation annotation)
 		{
 			var position = new Position (annotation.Coordinate.Latitude, annotation.Coordinate.Longitude);
 			foreach (var pin in busPins) {
@@ -123,7 +134,10 @@ namespace NUSBusMap.iOS
 					return pin;
 				}
 			}
-			return null;
+
+			// position neither bus nor stop, is person (current location)
+			// return custom pin for person
+			return currPin;
 		}
 	}
 }

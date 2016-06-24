@@ -10,6 +10,7 @@ namespace NUSBusMap
 		public double longitude { get; set; }
 		public string name { get; set; }
 		public List<string> services { get; set; }
+		public List<string> repeatedServices { get; set; } // services which pass by bus stop twice
         public string road { get; set; }
 	}
 }

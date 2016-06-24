@@ -9,6 +9,9 @@ namespace NUSBusMap
 		public string routeName { get; set; }
 		public string firstStop { get; set; }
 		public string lastStop { get; set; }
+		public string loopStop { get; set; }
+		public int stopCounter { get; set; }
+		// enumerator, init from BusSvcs[routeName]
 		public IEnumerator nextStopEnumerator { get; set; }
 		public IEnumerator nextCheckpointEnumerator { get; set; }
 		public IEnumerator nextDistanceEnumerator { get; set; }
@@ -17,6 +20,7 @@ namespace NUSBusMap
 		public double avgSpeed { get; set; }
 		public double currSpeed { get; set; }
 		public double distanceTravelled { get; set; }
+		public bool finished { get; set; }
 	}
 }
 
