@@ -189,7 +189,6 @@
     <BundleResource Include="Resources\MapTabIcon.png" />
     <BundleResource Include="Resources\Info.png" />
     <BundleResource Include="Resources\stop.png" />
-    <BundleResource Include="Resources\NUSBusStops.json" />
     <BundleResource Include="Resources\A1.png" />
     <BundleResource Include="Resources\A1E.png" />
     <BundleResource Include="Resources\A2.png" />
