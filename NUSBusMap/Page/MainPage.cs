@@ -13,6 +13,7 @@ namespace NUSBusMap
 				Icon = "BusTabIcon.png",
 				Title = "Bus Services"
 			});
+			Children.Add (new AlertPage ());
 		}
 	}
 }

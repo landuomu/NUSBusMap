@@ -200,5 +200,6 @@
     <BundleResource Include="Resources\UT-CLB.png" />
     <BundleResource Include="Resources\UT-FOS.png" />
     <BundleResource Include="Resources\person.png" />
+    <BundleResource Include="Resources\AlertIcon.png" />
   </ItemGroup>
 </Project>
