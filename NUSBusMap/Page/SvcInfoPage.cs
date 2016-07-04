@@ -9,6 +9,7 @@ namespace NUSBusMap
 		public SvcInfoPage (string routeName)
 		{
 			Title = routeName + " Route Information";
+			Content = new Label { Text = "Page under construction" };
 		}
 	}
 }

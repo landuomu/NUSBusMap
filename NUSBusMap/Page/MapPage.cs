@@ -49,7 +49,6 @@ namespace NUSBusMap
 			ShiftToCurrentLocation ();
 			Device.StartTimer (TimeSpan.FromSeconds(SettingsVars.REFRESH_POS_INTERVAL), ShiftToCurrentLocation);
 
-<<<<<<< HEAD
 	        // slider to change radius from 0.1 - 0.9 km (for simulator testing, not needed for device testing)
 //			var slider = new Slider (1, 9, 5);
 //			slider.ValueChanged += (sender, e) => {
@@ -58,16 +57,6 @@ namespace NUSBusMap
 //			    map.MoveToRegion(MapSpan.FromCenterAndRadius(
 //			    	map.VisibleRegion.Center, Distance.FromKilometers(currRadius)));
 //			};
-=======
-	        // slider to change radius from 0.1 - 0.9 km (for simulator testing)
-			var slider = new Slider (1, 9, 5);
-			slider.ValueChanged += (sender, e) => {
-			    var zoomLevel = e.NewValue; // between 1 and 9
-			    currRadius = (SettingsVars.MEAN_MAP_RADIUS * 2) - (zoomLevel/(SettingsVars.MEAN_MAP_RADIUS * 20));
-			    map.MoveToRegion(MapSpan.FromCenterAndRadius(
-			    	map.VisibleRegion.Center, Distance.FromKilometers(currRadius)));
-			};
->>>>>>> parent of 440fa6e... code cleaning in prep for Milestone 2
 
 			// add map and slider to stack layout
 	        var stack = new StackLayout { Spacing = 0 };
@@ -99,12 +88,8 @@ namespace NUSBusMap
 			FreezeMap = value;
 	    }
 
-<<<<<<< HEAD
 	    // after getting current position, if successful, centralise the map to current position
 		private bool ShiftToCurrentLocation () {
-=======
-		private void ShiftToCurrentLocation () {
->>>>>>> parent of 440fa6e... code cleaning in prep for Milestone 2
 			GetCurrentPosition ().ContinueWith(t => {
 	            if (t.IsFaulted)
 	            {
@@ -139,6 +124,7 @@ namespace NUSBusMap
 			return true;
 	    }
 
+	    // get current position of device using XLabs Geolocation service
 		private async Task<XLabs.Platform.Services.Geolocation.Position> GetCurrentPosition() {
 			IGeolocator geolocator = Resolver.Resolve<IGeolocator>();
 
@@ -164,7 +150,7 @@ namespace NUSBusMap
 	    }
 
 	    private bool UpdateBusPins() {
-			// skip update pins if map is freezed
+			// skip update pins if map is freezed (user clicks on pin)
 			if (FreezeMap)
 				return true;
 
@@ -175,9 +161,10 @@ namespace NUSBusMap
 
 			foreach (BusOnRoad bor in BusHelper.ActiveBuses.Values) {
 				// move bus to next checkpoint on the route for simulation
+				// actual deployment: get real-time position of bus
 				BusSimulator.GoToNextCheckpoint (bor);
 
-				// add pin to map if svc show on map
+				// add pin to map if service is to be shown on map
 				if (BusHelper.BusSvcs [bor.routeName].showOnMap) {
 					var description = "Start: " + BusHelper.BusStops [bor.firstStop].name + "\n" +
 					                  "End: " + BusHelper.BusStops [bor.lastStop].name + "\n" +
@@ -210,7 +197,7 @@ namespace NUSBusMap
 
 	    private bool UpdateStopPins ()
 		{
-			// skip update pins if map is freezed
+			// skip update pins if map is freezed (user clicks on pin)
 			if (FreezeMap)
 				return true;
 
@@ -219,7 +206,7 @@ namespace NUSBusMap
 				map.Pins.Remove (p.Pin);
 			map.StopPins.Clear ();
 
-			// add stop pins, with change in arrivatl timing
+			// add stop pins, with change in arrival timing
 			foreach (BusStop busStop in BusHelper.BusStops.Values) {
 				var description = "";
 				foreach (string svc in busStop.services) {
