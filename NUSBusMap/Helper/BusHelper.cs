@@ -105,7 +105,7 @@ namespace NUSBusMap
 					continue;
 
 				// first bus stop case
-				if (busStopCode.Equals (bor.firstStop)) {
+				if (busStopCode.Equals (bor.firstStop) && bor.stopCounter == 0) {
 					if (svc.timerSinceLastDispatch != null) {
 						// get time by freq for the first stop (ignore negative)
 						var timeDiff = svc.freq [(int)Days.WEEKDAY] - (int)(svc.timerSinceLastDispatch.ElapsedMilliseconds / (1000 * 60));

@@ -19,7 +19,6 @@ namespace NUSBusMap.iOS
 		UIView customPinView;
 		List<CustomPin> busPins;
 		List<CustomPin> stopPins;
-		CustomPin currPin;
 
 		// event called when element is added/removed
 		protected override void OnElementChanged (ElementChangedEventArgs<View> e)
@@ -38,7 +37,6 @@ namespace NUSBusMap.iOS
 				var nativeMap = Control as MKMapView;
 				busPins = formsMap.BusPins;
 				stopPins = formsMap.StopPins;
-				currPin = formsMap.CurrPin;
 
 				nativeMap.GetViewForAnnotation = GetViewForAnnotation;
 				nativeMap.DidSelectAnnotationView += OnDidSelectAnnotationView;
@@ -74,10 +72,6 @@ namespace NUSBusMap.iOS
 		// event called when user clicks on pin, show annotation view (details of the pin)
 		void OnDidSelectAnnotationView (object sender, MKAnnotationViewEventArgs e)
 		{
-			// no annotation view for current position pin
-			if (e.View.Annotation.GetType().Equals(PinType.Generic))
-				return;
-
 			// centralise map and freeze map updates
 			MapPage.CentraliseMap (new Position(e.View.Annotation.Coordinate.Latitude, 
 									e.View.Annotation.Coordinate.Longitude));
@@ -134,10 +128,7 @@ namespace NUSBusMap.iOS
 					return pin;
 				}
 			}
-
-			// position neither bus nor stop, is person (current location)
-			// return custom pin for person
-			return currPin;
+			return null;
 		}
 	}
 }
