@@ -21,7 +21,6 @@ namespace NUSBusMap.iOS
 		List<CustomPin> stopPins;
 		CustomPin currPin;
 
-		// event called when element is added/removed
 		protected override void OnElementChanged (ElementChangedEventArgs<View> e)
 		{
 			base.OnElementChanged (e);
@@ -46,7 +45,6 @@ namespace NUSBusMap.iOS
 			}
 		}
 
-		// init function when pin is added, allow pin to add custom view
 		MKAnnotationView GetViewForAnnotation (MKMapView mapView, IMKAnnotation annotation)
 		{
 			MKAnnotationView annotationView = null;
@@ -71,7 +69,6 @@ namespace NUSBusMap.iOS
 			return annotationView;
 		}
 
-		// event called when user clicks on pin, show annotation view (details of the pin)
 		void OnDidSelectAnnotationView (object sender, MKAnnotationViewEventArgs e)
 		{
 			// no annotation view for current position pin
@@ -109,7 +106,6 @@ namespace NUSBusMap.iOS
 			e.View.AddSubview (customPinView);
 		}
 
-		// event called when user deselects pin, clean up
 		void OnDidDeselectAnnotationView (object sender, MKAnnotationViewEventArgs e)
 		{
 			if (!e.View.Selected) {
@@ -120,8 +116,12 @@ namespace NUSBusMap.iOS
 			}
 		}
 
+<<<<<<< HEAD
 		// get CustomPin object from annotation
 		CustomPin GetCustomPin (IMKAnnotation annotation)
+=======
+		CustomPin GetCustomPin (MKPointAnnotation annotation)
+>>>>>>> parent of 440fa6e... code cleaning in prep for Milestone 2
 		{
 			var position = new Position (annotation.Coordinate.Latitude, annotation.Coordinate.Longitude);
 			foreach (var pin in busPins) {

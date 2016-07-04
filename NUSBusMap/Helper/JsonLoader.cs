@@ -9,8 +9,6 @@ namespace NUSBusMap
 {
 	public static class JsonLoader
 	{
-		// class to load json file and deserialize to object for use in code
-
 		const string stopsFilename = "BusStops.json";
 		const string svcsFilename = "BusSvcs.json";
 

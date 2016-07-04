@@ -9,9 +9,6 @@ namespace NUSBusMap
 	{
 		public SvcPage ()
 		{
-			// table structure: header row explaining purpose of each column
-			// followed by each bus service represented by SvcCell
-
 			// create table view
 			var view = new TableView () { Intent = TableIntent.Data };
 			var root = new TableRoot ();
