@@ -9,12 +9,58 @@ namespace NUSBusMap
 {
 	public class AlertPage : ContentPage
 	{
-		private ObservableCollection<BusStop> stops;
-		private ListView listView;
-		private List<string> enabledSvcs;
+		public static ObservableCollection<BusStop> stops;
+		public static List<string> enabledSvcs;
+		public static List<string> enabledStops;
+
+
+		public class WrappedItemSelectionTemplate : ViewCell
+        {
+            public WrappedItemSelectionTemplate() : base ()
+            {
+                Label name = new Label();
+                name.SetBinding(Label.TextProperty, new Binding("name"));
+
+                Switch mainSwitch = new Switch();
+                mainSwitch.SetBinding(Switch.IsToggledProperty, new Binding("alertEnabled"));
+                mainSwitch.Toggled += (object sender, ToggledEventArgs e) => {
+					var stop = (BusStop)(((Element)sender).Parent.BindingContext);
+					if (stop == null) return; // stop removed from list
+
+                	if (e.Value) {
+                		if (!enabledStops.Contains(stop.busStopCode)) {
+                			enabledStops.Add(stop.busStopCode);
+                		}
+                	} else {
+						enabledStops.Remove(stop.busStopCode);
+					}
+                };
+
+                RelativeLayout layout = new RelativeLayout();
+                layout.Children.Add (name,
+                    Constraint.Constant (5),
+                    Constraint.Constant (5),
+                    Constraint.RelativeToParent (p => p.Width - 60),
+                    Constraint.RelativeToParent (p => p.Height - 10)
+                );
+                layout.Children.Add (mainSwitch,
+                    Constraint.RelativeToParent (p => p.Width - 55),
+                    Constraint.Constant (5),
+                    Constraint.Constant (50),
+                    Constraint.RelativeToParent (p => p.Height - 10)
+                );
+                View = layout;
+            }
+        }
 
 		public AlertPage ()
 		{
+			// init lists
+			stops = new ObservableCollection<BusStop> ();
+			enabledSvcs = new List<string> ();
+			enabledStops = new List<string> ();
+
+			// create grid header
 			var gridHeader = new Label { 
 				Text = "Bus Services", 
 				FontFamily = "Arial",
@@ -25,6 +71,7 @@ namespace NUSBusMap
 				Margin = 10
 			};
 
+			// create grid for bus services
 			var grid = new Grid {
 				ColumnSpacing = 10,
 				RowSpacing = 10,
@@ -45,21 +92,7 @@ namespace NUSBusMap
 				VerticalOptions = LayoutOptions.Center
 			};
 
-			var listHeader = new Label { 
-				Text = "Bus Stops", 
-				FontFamily = "Arial",
-				FontAttributes = FontAttributes.Bold,
-				FontSize = 24,
-				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center,
-				Margin = 10
-			};
-
-			stops = new ObservableCollection<BusStop> ();
-			enabledSvcs = new List<string> ();
-			listView = new ListView ();
-			listView.ItemsSource = stops;
-
+			// add button for each bus service
 			int idx = 0;
 			foreach (string routeName in BusHelper.BusSvcs.Keys) {
 				Button routeBtn = new Button {
@@ -74,6 +107,27 @@ namespace NUSBusMap
 				idx++;
 			}
 
+			// create list header
+			var listHeader = new Label { 
+				Text = "Bus Stops", 
+				FontFamily = "Arial",
+				FontAttributes = FontAttributes.Bold,
+				FontSize = 24,
+				HorizontalOptions = LayoutOptions.Center,
+				VerticalOptions = LayoutOptions.Center,
+				Margin = 10
+			};
+
+			// create listview for bus stops
+			var listView = new ListView ();
+			listView.ItemsSource = stops;
+			listView.ItemTemplate = new DataTemplate (typeof(WrappedItemSelectionTemplate));
+			// disable default selection
+			listView.ItemSelected += (sender, e) => {
+			    ((ListView)sender).SelectedItem = null;
+			};
+
+			// create stack for all items
 			var stack = new StackLayout { Spacing = 10, Margin = 10 };
 			stack.Children.Add (gridHeader);
 			stack.Children.Add (grid);

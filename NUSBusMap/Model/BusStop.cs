@@ -12,7 +12,7 @@ namespace NUSBusMap
 		public List<string> services { get; set; }
 		public List<string> repeatedServices { get; set; } // services which pass by bus stop twice
         public string road { get; set; }
-
+        public bool alertEnabled { get; set; }
         public override string ToString ()
 		{
 			return string.Format ("{0} - {1}", busStopCode, name);
