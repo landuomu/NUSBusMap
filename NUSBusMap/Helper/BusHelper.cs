@@ -105,8 +105,8 @@ namespace NUSBusMap
 					continue;
 
 				// first bus stop case
-				if (busStopCode.Equals (bor.firstStop) && bor.stopCounter == 0) {
-					if (svc.timerSinceLastDispatch != null) {
+				if (busStopCode.Equals (bor.firstStop)) {
+					if (bor.stopCounter == 0 && svc.timerSinceLastDispatch != null) {
 						// get time by freq for the first stop (ignore negative)
 						var timeDiff = svc.freq [(int)Days.WEEKDAY] - (int)(svc.timerSinceLastDispatch.ElapsedMilliseconds / (1000 * 60));
 						if (timeDiff >= 0) nextTiming = timeDiff;
@@ -116,6 +116,9 @@ namespace NUSBusMap
 					// get diff of distance travelled by bus and distance between stops for the service
 					// count from back for case after loop (repeated service) or last stop
 					var index = (loop.Equals("AFTER") || bor.stopCounter >= svc.stops.Count - 2) ? svc.stops.LastIndexOf (busStopCode) - 1 : svc.stops.IndexOf(busStopCode) - 1;
+					// bounds check
+					if (index < 0 || index >= svc.distanceBetweenStops.Count)
+						continue;
 					var diffDist = svc.distanceBetweenStops [index] - bor.distanceTravelled;
 
 					// ignore getting time if bus passed stop
