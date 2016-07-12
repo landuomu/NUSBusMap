@@ -8,8 +8,11 @@ namespace NUSBusMap
 	{
 		public App ()
 		{
-			// The root page of your application
-			MainPage = new MapPage ();
+			// load bus data
+			BusHelper.LoadBusData ();
+
+			// Display the main page of your application
+			MainPage = new NUSBusMap.MainPage ();
 		}
 
 		protected override void OnStart ()
