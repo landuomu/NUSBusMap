@@ -140,7 +140,7 @@ namespace NUSBusMap
 			Content = stack;
 
 			// check if need to display alert every interval
-			Device.StartTimer (TimeSpan.FromSeconds(SettingsVars.REFRESH_ALERT_INTERVAL), CheckAlertTiming);
+			Device.StartTimer (TimeSpan.FromSeconds (SettingsVars.Variables ["REFRESH_ALERT_INTERVAL"]), CheckAlertTiming);
 		}
 
 		private void OnClickRoute (object sender, EventArgs e)
@@ -181,7 +181,7 @@ namespace NUSBusMap
 						var nextTimingStr = Regex.Match (arrivalTimingStr, @"\d+").Value;
 						if (!nextTimingStr.Equals (String.Empty)) {
 							var nextTiming = Int32.Parse (nextTimingStr);
-							if (nextTiming <= SettingsVars.ALERT_MINUTES) {
+							if (nextTiming <= SettingsVars.Variables ["ALERT_MINUTES"]) {
 								DisplayAlert ("Bus Alert", routeName + " is arriving " + stop.name + " at " + nextTiming + " min.", "OK", "Cancel");
 							}
 						}

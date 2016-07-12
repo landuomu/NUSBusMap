@@ -69,7 +69,7 @@ namespace NUSBusMap
 			var time = (int)((diffDist / bor.avgSpeed) / 60); // in min
 
 			// if arrived bus stop
-			if (diffDist < SettingsVars.MARGIN_OF_ERROR
+			if (diffDist < SettingsVars.Variables ["MARGIN_OF_ERROR"]
 			    && ((string)bor.nextStopEnumerator.Current).Equals (busStopCode)) {
 			    // shift next stop indicator
 			    // if no more stop, finish service

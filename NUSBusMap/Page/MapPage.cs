@@ -18,7 +18,7 @@ namespace NUSBusMap
 	    	// map with default centre at NUS
 			var NUSCentre = new Xamarin.Forms.Maps.Position (1.2966, 103.7764);
 	        map = new BusMap(
-				MapSpan.FromCenterAndRadius(NUSCentre, Distance.FromKilometers(SettingsVars.MEAN_MAP_RADIUS))) {
+				MapSpan.FromCenterAndRadius(NUSCentre, Distance.FromKilometers(SettingsVars.Variables ["MEAN_MAP_RADIUS"]))) {
 	                IsShowingUser = true,
 	                HeightRequest = 100,
 	                WidthRequest = 960,
@@ -29,7 +29,7 @@ namespace NUSBusMap
 			var slider = new Slider (1, 9, 5);
 			slider.ValueChanged += (sender, e) => {
 			    var zoomLevel = e.NewValue; // between 1 and 9
-			    currRadius = (SettingsVars.MEAN_MAP_RADIUS * 2) - (zoomLevel/(SettingsVars.MEAN_MAP_RADIUS * 20));
+				currRadius = (SettingsVars.Variables ["MEAN_MAP_RADIUS"] * 2) - (zoomLevel/(SettingsVars.Variables ["MEAN_MAP_RADIUS"] * 20));
 			    CentraliseMap(map.VisibleRegion.Center);
 			};
 
@@ -50,8 +50,8 @@ namespace NUSBusMap
 			UpdateStopPins ();
 
 	        // set timer to update bus, stops at interval
-			Device.StartTimer (TimeSpan.FromSeconds(SettingsVars.REFRESH_BUS_INTERVAL), UpdateBusPins);
-			Device.StartTimer (TimeSpan.FromSeconds(SettingsVars.REFRESH_STOP_INTERVAL), UpdateStopPins);
+			Device.StartTimer (TimeSpan.FromSeconds (SettingsVars.Variables ["REFRESH_BUS_INTERVAL"]), UpdateBusPins);
+			Device.StartTimer (TimeSpan.FromSeconds (SettingsVars.Variables ["REFRESH_STOP_INTERVAL"]), UpdateStopPins);
 
 			CentraliseMap (NUSCentre);
 	    }
