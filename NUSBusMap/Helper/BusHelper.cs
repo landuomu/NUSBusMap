@@ -8,6 +8,7 @@ namespace NUSBusMap
 	{
 		// enum for different kind of days for diff bus freq
 		public enum Days { WEEKDAY, SATURDAY, SUNDAY };
+		private static double MARGIN_OF_ERROR = 10.0; // in m, max distance allowed between bus and stop to be considered reached stop
 
 		public static Dictionary<string,BusStop> BusStops;
 		public static Dictionary<string,BusSvc> BusSvcs;
@@ -69,7 +70,7 @@ namespace NUSBusMap
 			var time = (int)((diffDist / bor.avgSpeed) / 60); // in min
 
 			// if arrived bus stop
-			if (diffDist < SettingsVars.Variables ["MARGIN_OF_ERROR"]
+			if (diffDist < MARGIN_OF_ERROR
 			    && ((string)bor.nextStopEnumerator.Current).Equals (busStopCode)) {
 			    // shift next stop indicator
 			    // if no more stop, finish service
@@ -146,11 +147,21 @@ namespace NUSBusMap
 
 		// return true if current time between first bus and last bus timing
 		public static bool IsWithinServiceTiming(string routeName) {
-			DateTime now = DateTime.Now;
-			TimeSpan currTimeSpan = new TimeSpan (now.Hour, now.Minute, now.Second);
+			TimeSpan currTimeSpan = DateTime.Now.TimeOfDay;
 			BusSvc svc = BusSvcs [routeName];
 			return currTimeSpan.CompareTo (TimeSpan.Parse (svc.firstBusTime[(int)Days.WEEKDAY])) > 0 &&
 			currTimeSpan.CompareTo (TimeSpan.Parse (svc.lastBusTime[(int)Days.WEEKDAY])) < 0;
+		}
+
+		// return int of enum based on current day
+		public static int GetPeriodOfDay() {
+			DateTime now = DateTime.Now;
+			if (now.DayOfWeek.Equals (DayOfWeek.Saturday))
+				return (int)Days.SATURDAY;
+			else if (now.DayOfWeek.Equals (DayOfWeek.Sunday))
+				return (int)Days.SUNDAY;
+			else
+				return (int)Days.WEEKDAY;
 		}
 	}
 }
