@@ -3,6 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Xamarin.Forms;
 
@@ -140,7 +142,7 @@ namespace NUSBusMap
 			Content = stack;
 
 			// check if need to display alert every interval
-			Device.StartTimer (TimeSpan.FromSeconds(SettingsVars.REFRESH_ALERT_INTERVAL), CheckAlertTiming);
+			CheckAlertTiming ();
 		}
 
 		private void OnClickRoute (object sender, EventArgs e)
@@ -168,27 +170,31 @@ namespace NUSBusMap
 			}
 		}
 
-		private bool CheckAlertTiming ()
+		private async void CheckAlertTiming ()
 		{
-			// check each stop and each svc that are enabled
-			foreach (string busStopCode in enabledStops) {
-				foreach (string routeName in enabledSvcs) {
-					var stop = BusHelper.BusStops [busStopCode];
-					var svc = BusHelper.BusSvcs [routeName];
-					if (stop.services.Contains (routeName)) {
-						// get arrival timing of svc in stop and display alert if below alert minutes
-						var arrivalTimingStr = BusHelper.GetArrivalTiming (busStopCode, routeName);
-						var nextTimingStr = Regex.Match (arrivalTimingStr, @"\d+").Value;
-						if (!nextTimingStr.Equals (String.Empty)) {
-							var nextTiming = Int32.Parse (nextTimingStr);
-							if (nextTiming <= SettingsVars.ALERT_MINUTES) {
-								DisplayAlert ("Bus Alert", routeName + " is arriving " + stop.name + " at " + nextTiming + " min.", "OK", "Cancel");
+			while (true) {
+				// check each stop and each svc that are enabled
+				foreach (string busStopCode in enabledStops) {
+					foreach (string routeName in enabledSvcs) {
+						var stop = BusHelper.BusStops [busStopCode];
+						var svc = BusHelper.BusSvcs [routeName];
+						if (stop.services.Contains (routeName)) {
+							// get arrival timing of svc in stop and display alert if below alert minutes
+							var arrivalTimingStr = BusHelper.GetArrivalTiming (busStopCode, routeName);
+							var nextTimingStr = Regex.Match (arrivalTimingStr, @"\d+").Value;
+							if (!nextTimingStr.Equals (String.Empty)) {
+								var nextTiming = Int32.Parse (nextTimingStr);
+								if (nextTiming <= SettingsVars.Variables ["ALERT_MINUTES"].value) {
+									DisplayAlert ("Bus Alert", routeName + " is arriving " + stop.name + " at " + nextTiming + " min.", "OK", "Cancel");
+								}
 							}
 						}
 					}
 				}
+
+				// continue after interval
+				await Task.Delay (TimeSpan.FromSeconds (SettingsVars.Variables ["REFRESH_ALERT_INTERVAL"].value));
 			}
-			return true;
 		}
 	}
 }

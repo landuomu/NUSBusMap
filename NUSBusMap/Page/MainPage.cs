@@ -14,6 +14,7 @@ namespace NUSBusMap
 				Title = "Bus Services"
 			});
 			Children.Add (new AlertPage ());
+			Children.Add (new SettingsPage ());
 		}
 	}
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace NUSBusMap
@@ -13,20 +15,8 @@ namespace NUSBusMap
 		public static void DispatchBuses ()
 		{
 			foreach (BusSvc bs in BusHelper.BusSvcs.Values) {
-				// kickstart first time
-				if (BusHelper.IsWithinServiceTiming (bs.routeName)) {
-					BusHelper.AddBusOnRoad (bs.routeName + "-" + BusHelper.ActiveBuses.Count, bs.routeName);
-					StartTimerDispatch (bs);
-				}
-
 				// set timer for each bus service to dispatch bus at freq (if within service timing)
-				Device.StartTimer (TimeSpan.FromMinutes (bs.freq [(int)BusHelper.Days.WEEKDAY]), () => {
-					if (BusHelper.IsWithinServiceTiming(bs.routeName)) {
-						BusHelper.AddBusOnRoad(bs.routeName + "-" + BusHelper.ActiveBuses.Count, bs.routeName);
-						return true;
-					} else 
-						return false;
-				});
+				DispatchBasedOnTime (bs);
 			}
 		}
 
@@ -55,6 +45,18 @@ namespace NUSBusMap
 			// update bus position
 			bor.longitude = longitude;
 			bor.latitude = latitude;
+		}
+
+		private static async void DispatchBasedOnTime (BusSvc bs)
+		{
+			while (BusHelper.IsWithinServiceTiming (bs.routeName)) {
+				BusHelper.AddBusOnRoad (bs.routeName + "-" + BusHelper.ActiveBuses.Count, bs.routeName);
+				StartTimerDispatch (bs);
+
+				// dispatch again after freq
+				var currTimePeriod = BusHelper.GetPeriodOfDay ();
+				await Task.Delay (TimeSpan.FromMinutes (bs.freq [currTimePeriod]));
+			}
 		}
 
 		// have a stopwatch to keep track of time since bus service last dispatched
