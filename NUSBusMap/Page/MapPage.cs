@@ -48,6 +48,7 @@ namespace NUSBusMap
 			BusSimulator.DispatchBuses ();
 
 			// init bus and stop pins
+			UpdatePublicBusPins ();
 			UpdateBusPins ();
 			UpdateStopPins ();
 
@@ -99,8 +100,6 @@ namespace NUSBusMap
 						}
 					}
 
-					// TODO: get public bus real-time location (call API for all public bus stops in json)
-
 					// remove buses which has finished plying
 					List<BusOnRoad> finishedBuses = BusHelper.ActiveBuses.Values.Where (bor => bor.finished).ToList ();
 					foreach (BusOnRoad bor in finishedBuses)
@@ -109,6 +108,50 @@ namespace NUSBusMap
 
 				// continue after interval
 				await Task.Delay(TimeSpan.FromSeconds (SettingsVars.Variables ["REFRESH_BUS_INTERVAL"].value));
+			}
+	    }
+
+	    private async void UpdatePublicBusPins ()
+		{
+			while (true) {
+				// skip update pins if map is freezed (user clicks on pin)
+				if (!FreezeMap) {
+					// remove all bus pins
+					foreach (CustomPin p in map.PublicBusPins)
+						map.Pins.Remove (p.Pin);
+					map.PublicBusPins.Clear ();
+
+					// get public bus real-time location (call API for all public bus stops in json)
+					Regex regex = new Regex (@"^\d+$");
+					List<PublicBusOnRoad> publicBuses = new List<PublicBusOnRoad> ();
+					foreach (string busStopCode in BusHelper.BusStops.Keys.Where(code => regex.IsMatch(code))) {
+						// get buses passing by bus stop (ignore same bus)
+						var thisPublicBuses = await BusHelper.GetPublicBuses (busStopCode);
+						publicBuses.AddRange (thisPublicBuses.Where (b1 => !publicBuses.Any (b2 => b2.IsSameBus (b1))));
+
+						// add pin if bus has location
+						foreach (PublicBusOnRoad bus in publicBuses.Where(bus => bus.Latitude.HasValue && bus.Longitude.HasValue)) {
+							var description = "Start: " + bus.OriginatingID + "\n" +
+							                  "End: " + bus.TerminatingID + "\n";
+							var pin = new Pin {
+								Type = PinType.Place,
+								Position = new Xamarin.Forms.Maps.Position (bus.Latitude.Value, bus.Longitude.Value),
+								Label = bus.ServiceNo,
+								Address = description
+							};
+							var busPin = new CustomPin {
+								Pin = pin,
+								Id = bus.ServiceNo,
+								Url = bus.ServiceNo + ".png"
+							};
+							map.Pins.Add (pin);
+							map.PublicBusPins.Add (busPin);
+						}
+					}
+				}
+
+				// continue after interval
+				await Task.Delay(TimeSpan.FromSeconds (SettingsVars.Variables ["REFRESH_PUBLIC_BUS_INTERVAL"].value));
 			}
 	    }
 

@@ -12,10 +12,19 @@ namespace NUSBusMap
 				name = "REFRESH_BUS_INTERVAL",
 				section = Section.MAP, 
 				displayName = "Refresh bus location every (s)", 
-				value = 3,
-				min = 1,
-				max = 10, 
+				value = 5,
+				min = 3,
+				max = 15, 
 				step = 1
+			} },
+			{"REFRESH_PUBLIC_BUS_INTERVAL", new SettingsVarObj () { 
+				name = "REFRESH_PUBLIC_BUS_INTERVAL",
+				section = Section.MAP, 
+				displayName = "Refresh public bus location every (s)", 
+				value = 15,
+				min = 5,
+				max = 30, 
+				step = 5
 			} },
 			{"REFRESH_STOP_INTERVAL", new SettingsVarObj () { 
 				name = "REFRESH_STOP_INTERVAL",
