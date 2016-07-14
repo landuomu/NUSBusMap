@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
@@ -98,6 +99,8 @@ namespace NUSBusMap
 						}
 					}
 
+					// TODO: get public bus real-time location (call API for all public bus stops in json)
+
 					// remove buses which has finished plying
 					List<BusOnRoad> finishedBuses = BusHelper.ActiveBuses.Values.Where (bor => bor.finished).ToList ();
 					foreach (BusOnRoad bor in finishedBuses)
@@ -134,6 +137,13 @@ namespace NUSBusMap
 								description += svc + ": " + BusHelper.GetArrivalTiming (busStop.busStopCode, svc) + "\n";
 							}
 						}
+
+						// get public bus arrival timing for bus stop (if public buses pass by)
+						// busStopCode with all digits -> public bus will pass by
+						Regex regex = new Regex(@"^\d+$");
+						if (regex.IsMatch(busStop.busStopCode))
+							description += await BusHelper.GetPublicBusesArrivalTiming (busStop.busStopCode);
+							
 						var pin = new Pin {
 							Type = PinType.Place,
 							Position = new Xamarin.Forms.Maps.Position (busStop.latitude, busStop.longitude),

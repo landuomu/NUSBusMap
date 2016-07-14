@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NUSBusMap
 {
@@ -82,7 +84,7 @@ namespace NUSBusMap
 			}
 
 			// generate display string
-			return (time == 0) ? "Arr" : ( (time > 30) ? "--" : time + " min" );
+			return (time == 0) ? "Arr" : ( (time > 60) ? "--" : time + " min" );
 		}
 
 		// return "arr" or "x min" or "not operating" of next and subsequent bus timing
@@ -139,9 +141,42 @@ namespace NUSBusMap
 
 			// generate display string of next and subsequent timings (ignore if more than 30 min)
 			string display = "";
-			display += (nextTiming == 0) ? "Arr" : ((nextTiming > 30) ? "--" : nextTiming + " min");
+			display += (nextTiming == 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
 			display += " / ";
-			display += (subsequentTiming == 0) ? "Arr" : (subsequentTiming > 30) ? "--" : subsequentTiming + " min";
+			display += (subsequentTiming == 0) ? "Arr" : (subsequentTiming > 60) ? "--" : subsequentTiming + " min";
+			return display;
+		}
+
+		public static async Task<string> GetPublicBusesArrivalTiming (string busStopCode)
+		{
+			string display = "";
+			PublicBusStop pbs = await JsonLoader.LoadPublicBusInfo (busStopCode);
+			foreach (PublicBusSvc service in pbs.Services) {
+				display += service.ServiceNo + ": ";
+
+				// case not operating
+				if (service.Status.Equals ("Not In Operation"))
+					display += "not operating\n";
+
+				// get next/subsequent bus timing
+				if (service.NextBus.EstimatedArrival.HasValue) {
+					var nextTiming = ((TimeSpan)(service.NextBus.EstimatedArrival - DateTime.Now)).Minutes;
+					display += (nextTiming == 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
+				}
+				if (service.SubsequentBus.EstimatedArrival.HasValue) {
+					var nextTiming = ((TimeSpan)(service.SubsequentBus.EstimatedArrival - DateTime.Now)).Minutes;
+					display += " / ";
+					display += (nextTiming == 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
+				}
+				if (service.SubsequentBus3.EstimatedArrival.HasValue) {
+					var nextTiming = ((TimeSpan)(service.SubsequentBus3.EstimatedArrival - DateTime.Now)).Minutes;
+					display += " / ";
+					display += (nextTiming == 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
+				}
+
+				display += "\n";
+			}
+
 			return display;
 		}
 
