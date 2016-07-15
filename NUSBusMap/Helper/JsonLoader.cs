@@ -16,6 +16,7 @@ namespace NUSBusMap
 
 		const string stopsFilename = "BusStops.json";
 		const string svcsFilename = "BusSvcs.json";
+		const string publicBusFilename = "PublicBusSvcBusStops.json";
 
 		public static IStreamLoader Loader { get; set;}
 
@@ -30,6 +31,13 @@ namespace NUSBusMap
 		{
 			using (var reader = new StreamReader(OpenData(svcsFilename))) {
 				return JsonConvert.DeserializeObject<Dictionary<string,BusSvc>>(reader.ReadToEnd());
+			}
+		}
+
+		public static Dictionary<string,List<string>> LoadPublicBuses() 
+		{
+			using (var reader = new StreamReader(OpenData(publicBusFilename))) {
+				return JsonConvert.DeserializeObject<Dictionary<string,List<string>>>(reader.ReadToEnd());
 			}
 		}
 

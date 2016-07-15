@@ -15,6 +15,7 @@ namespace NUSBusMap
 		private static BusMap map;
 		private static double MEAN_MAP_RADIUS = 0.5; // in km
 		private static double currRadius = 0.5; // in km
+		private static double MARGIN_OF_ERROR = 10.0; // in m
 
 	    public MapPage() {
 	    	// map with default centre at NUS
@@ -121,32 +122,39 @@ namespace NUSBusMap
 						map.Pins.Remove (p.Pin);
 					map.PublicBusPins.Clear ();
 
-					// get public bus real-time location (call API for all public bus stops in json)
-					Regex regex = new Regex (@"^\d+$");
+					// get list of bus stops to call based on enabled public bus svcs on map
+					List<string> busStopCodes = new List<string> ();
+					foreach (string serviceNo in BusHelper.PublicBusSvcOnMap)
+						busStopCodes = busStopCodes.Union (BusHelper.PublicBusSvcStops [serviceNo]).ToList ();
+
+					// get public bus real-time location (by calling API)
 					List<PublicBusOnRoad> publicBuses = new List<PublicBusOnRoad> ();
-					foreach (string busStopCode in BusHelper.BusStops.Keys.Where(code => regex.IsMatch(code))) {
+					foreach (string busStopCode in busStopCodes) {
 						// get buses passing by bus stop (ignore same bus)
 						var thisPublicBuses = await BusHelper.GetPublicBuses (busStopCode);
-						publicBuses.AddRange (thisPublicBuses.Where (b1 => !publicBuses.Any (b2 => b2.IsSameBus (b1))));
+						publicBuses.AddRange (thisPublicBuses.Where (b1 => !publicBuses.Any (b2 => b2.IsSameBus (b1, MARGIN_OF_ERROR))));
+					}
 
-						// add pin if bus has location
-						foreach (PublicBusOnRoad bus in publicBuses.Where(bus => bus.Latitude.HasValue && bus.Longitude.HasValue)) {
-							var description = "Start: " + bus.OriginatingID + "\n" +
-							                  "End: " + bus.TerminatingID + "\n";
-							var pin = new Pin {
-								Type = PinType.Place,
-								Position = new Xamarin.Forms.Maps.Position (bus.Latitude.Value, bus.Longitude.Value),
-								Label = bus.ServiceNo,
-								Address = description
-							};
-							var busPin = new CustomPin {
-								Pin = pin,
-								Id = bus.ServiceNo,
-								Url = bus.ServiceNo + ".png"
-							};
-							map.Pins.Add (pin);
-							map.PublicBusPins.Add (busPin);
-						}
+					// add pin if bus has location
+					foreach (PublicBusOnRoad bus in publicBuses.Where(bus => 
+								(bus.Latitude.HasValue && !bus.Latitude.Value.Equals(0)) && 
+								(bus.Longitude.HasValue && !bus.Longitude.Value.Equals(0)))) {
+
+						var description = "Start: " + bus.OriginatingID + "\n" +
+						                  "End: " + bus.TerminatingID + "\n";
+						var pin = new Pin {
+							Type = PinType.Place,
+							Position = new Xamarin.Forms.Maps.Position (bus.Latitude.Value, bus.Longitude.Value),
+							Label = bus.ServiceNo,
+							Address = description
+						};
+						var busPin = new CustomPin {
+							Pin = pin,
+							Id = bus.ServiceNo,
+							Url = bus.ServiceNo + ".png"
+						};
+						map.Pins.Add (pin);
+						map.PublicBusPins.Add (busPin);
 					}
 				}
 

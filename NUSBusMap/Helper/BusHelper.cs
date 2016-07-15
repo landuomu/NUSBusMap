@@ -16,12 +16,16 @@ namespace NUSBusMap
 		public static Dictionary<string,BusStop> BusStops;
 		public static Dictionary<string,BusSvc> BusSvcs;
 		public static Dictionary<string,BusOnRoad> ActiveBuses;
+		public static Dictionary<string,List<string>> PublicBusSvcStops; // key - bus service no, value - list of bus stop code which bus service plies
+		public static List<string> PublicBusSvcOnMap; // list of public bus service no to be shown on map, toggled in svc page
 
 		// init dictionaries
 		public static void LoadBusData ()
 		{
 			BusStops = JsonLoader.LoadStops();
 			BusSvcs = JsonLoader.LoadSvcs();
+			PublicBusSvcStops = JsonLoader.LoadPublicBuses ();
+			PublicBusSvcOnMap = new List<string> ();
 			ActiveBuses = new Dictionary<string,BusOnRoad> ();
 		}
 
@@ -158,24 +162,24 @@ namespace NUSBusMap
 				if (service.Status.Equals ("Not In Operation"))
 					display += "not operating\n";
 
-				// get next/subsequent bus timing
+				// get next/subsequent bus timing (give +- 1 min offset for public buses timing)
 				if (service.NextBus.EstimatedArrival.HasValue) {
 					var nextTiming = ((TimeSpan)(service.NextBus.EstimatedArrival - DateTime.Now)).Minutes;
-					if (nextTiming >= 0)
-						display += (nextTiming == 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
+					if (nextTiming >= -1)
+						display += (nextTiming <= 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
 				}
 				if (service.SubsequentBus.EstimatedArrival.HasValue) {
 					var nextTiming = ((TimeSpan)(service.SubsequentBus.EstimatedArrival - DateTime.Now)).Minutes;
-					if (nextTiming >= 0) {
+					if (nextTiming >= -1) {
 						display += " / ";
-						display += (nextTiming == 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
+						display += (nextTiming <= 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
 					}
 				}
 				if (service.SubsequentBus3.EstimatedArrival.HasValue) {
 					var nextTiming = ((TimeSpan)(service.SubsequentBus3.EstimatedArrival - DateTime.Now)).Minutes;
-					if (nextTiming >= 0) {
+					if (nextTiming >= -1) {
 						display += " / ";
-						display += (nextTiming == 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
+						display += (nextTiming <= 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
 					}
 				}
 
@@ -190,8 +194,8 @@ namespace NUSBusMap
 			PublicBusStop pbs = await JsonLoader.LoadPublicBusInfo (busStopCode);
 
 			foreach(PublicBusSvc service in pbs.Services) {
-				// case not operating -- ignore
-				if (service.Status.Equals ("Not In Operation"))
+				// case not operating, or public bus not shown on map -- ignore
+				if (service.Status.Equals ("Not In Operation") || !PublicBusSvcOnMap.Contains(service.ServiceNo))
 					continue;
 
 				// add to list after adding service info to bus (for display purpose)

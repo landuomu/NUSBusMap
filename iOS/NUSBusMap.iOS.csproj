@@ -199,5 +199,6 @@
     <BundleResource Include="Resources\188.png" />
     <BundleResource Include="Resources\200.png" />
     <BundleResource Include="Resources\201.png" />
+    <BundleResource Include="Resources\PublicBusSvcBusStops.json" />
   </ItemGroup>
 </Project>
