@@ -151,6 +151,7 @@ namespace NUSBusMap
 			return display;
 		}
 
+		// call api to get formatted bus arrival timing of all public buses plying the bus stop
 		public static async Task<string> GetPublicBusesArrivalTiming (string busStopCode)
 		{
 			string display = "";
@@ -187,6 +188,22 @@ namespace NUSBusMap
 			}
 
 			return display;
+		}
+
+		// call api to get bus arrival timing of particular bus service plying the bus stop
+		public static async Task<string> GetPublicBusesArrivalTiming (string busStopCode, string busSvcNo) 
+		{
+			PublicBusStop pbs = await JsonLoader.LoadPublicBusInfo (busStopCode, busSvcNo);
+			PublicBusSvc service = pbs.Services [0];
+
+			// case not operating
+			if (service.Status.Equals ("Not In Operation"))
+				return "not operating";
+
+			// return next/subsequent/subsequent3 timing
+			return (service.NextBus.EstimatedArrival.HasValue) ? ((TimeSpan)(service.NextBus.EstimatedArrival - DateTime.Now)).Minutes.ToString() : 
+					((service.SubsequentBus.EstimatedArrival.HasValue) ? ((TimeSpan)(service.SubsequentBus.EstimatedArrival - DateTime.Now)).Minutes.ToString() : 
+					((service.SubsequentBus3.EstimatedArrival.HasValue) ? ((TimeSpan)(service.SubsequentBus3.EstimatedArrival - DateTime.Now)).Minutes.ToString() : "--"));
 		}
 
 		public static async Task<List<PublicBusOnRoad>> GetPublicBuses (string busStopCode) {
