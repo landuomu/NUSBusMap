@@ -18,6 +18,7 @@ namespace NUSBusMap.iOS
 	{
 		UIView customPinView;
 		List<CustomPin> busPins;
+		List<CustomPin> publicBusPins;
 		List<CustomPin> stopPins;
 
 		// event called when element is added/removed
@@ -36,6 +37,7 @@ namespace NUSBusMap.iOS
 				var formsMap = (BusMap)e.NewElement;
 				var nativeMap = Control as MKMapView;
 				busPins = formsMap.BusPins;
+				publicBusPins = formsMap.PublicBusPins;
 				stopPins = formsMap.StopPins;
 
 				nativeMap.GetViewForAnnotation = GetViewForAnnotation;
@@ -119,6 +121,11 @@ namespace NUSBusMap.iOS
 		{
 			var position = new Position (annotation.Coordinate.Latitude, annotation.Coordinate.Longitude);
 			foreach (var pin in busPins) {
+				if (pin.Pin.Position == position) {
+					return pin;
+				}
+			}
+			foreach (var pin in publicBusPins) {
 				if (pin.Pin.Position == position) {
 					return pin;
 				}

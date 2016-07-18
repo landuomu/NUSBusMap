@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace NUSBusMap
 {
@@ -13,12 +16,16 @@ namespace NUSBusMap
 		public static Dictionary<string,BusStop> BusStops;
 		public static Dictionary<string,BusSvc> BusSvcs;
 		public static Dictionary<string,BusOnRoad> ActiveBuses;
+		public static Dictionary<string,List<string>> PublicBusSvcStops; // key - bus service no, value - list of bus stop code which bus service plies
+		public static List<string> PublicBusSvcOnMap; // list of public bus service no to be shown on map, toggled in svc page
 
 		// init dictionaries
 		public static void LoadBusData ()
 		{
 			BusStops = JsonLoader.LoadStops();
 			BusSvcs = JsonLoader.LoadSvcs();
+			PublicBusSvcStops = JsonLoader.LoadPublicBuses ();
+			PublicBusSvcOnMap = new List<string> ();
 			ActiveBuses = new Dictionary<string,BusOnRoad> ();
 		}
 
@@ -65,7 +72,6 @@ namespace NUSBusMap
 			string busStopCode = (string)bor.nextStopEnumerator.Current;
 
 			// get diff of distance travelled by bus and distance between stops for the service
-			// FIXME: bug if svc stops at same bus stop twice
 			var diffDist = svc.distanceBetweenStops [bor.stopCounter] - bor.distanceTravelled;
 			var time = (int)((diffDist / bor.avgSpeed) / 60); // in min
 
@@ -82,7 +88,7 @@ namespace NUSBusMap
 			}
 
 			// generate display string
-			return (time == 0) ? "Arr" : ( (time > 30) ? "--" : time + " min" );
+			return (time == 0) ? "Arr" : ( (time > 60) ? "--" : time + " min" );
 		}
 
 		// return "arr" or "x min" or "not operating" of next and subsequent bus timing
@@ -139,18 +145,84 @@ namespace NUSBusMap
 
 			// generate display string of next and subsequent timings (ignore if more than 30 min)
 			string display = "";
-			display += (nextTiming == 0) ? "Arr" : ((nextTiming > 30) ? "--" : nextTiming + " min");
+			display += (nextTiming == 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
 			display += " / ";
-			display += (subsequentTiming == 0) ? "Arr" : (subsequentTiming > 30) ? "--" : subsequentTiming + " min";
+			display += (subsequentTiming == 0) ? "Arr" : (subsequentTiming > 60) ? "--" : subsequentTiming + " min";
 			return display;
+		}
+
+		public static async Task<string> GetPublicBusesArrivalTiming (string busStopCode)
+		{
+			string display = "";
+			PublicBusStop pbs = await JsonLoader.LoadPublicBusInfo (busStopCode);
+			foreach (PublicBusSvc service in pbs.Services) {
+				display += service.ServiceNo + ": ";
+
+				// case not operating
+				if (service.Status.Equals ("Not In Operation"))
+					display += "not operating\n";
+
+				// get next/subsequent bus timing (give +- 1 min offset for public buses timing)
+				if (service.NextBus.EstimatedArrival.HasValue) {
+					var nextTiming = ((TimeSpan)(service.NextBus.EstimatedArrival - DateTime.Now)).Minutes;
+					if (nextTiming >= -1)
+						display += (nextTiming <= 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
+				}
+				if (service.SubsequentBus.EstimatedArrival.HasValue) {
+					var nextTiming = ((TimeSpan)(service.SubsequentBus.EstimatedArrival - DateTime.Now)).Minutes;
+					if (nextTiming >= -1) {
+						display += " / ";
+						display += (nextTiming <= 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
+					}
+				}
+				if (service.SubsequentBus3.EstimatedArrival.HasValue) {
+					var nextTiming = ((TimeSpan)(service.SubsequentBus3.EstimatedArrival - DateTime.Now)).Minutes;
+					if (nextTiming >= -1) {
+						display += " / ";
+						display += (nextTiming <= 0) ? "Arr" : ((nextTiming > 60) ? "--" : nextTiming + " min");
+					}
+				}
+
+				display += "\n";
+			}
+
+			return display;
+		}
+
+		public static async Task<List<PublicBusOnRoad>> GetPublicBuses (string busStopCode) {
+			List<PublicBusOnRoad> publicBuses = new List<PublicBusOnRoad> ();
+			PublicBusStop pbs = await JsonLoader.LoadPublicBusInfo (busStopCode);
+
+			foreach(PublicBusSvc service in pbs.Services) {
+				// case not operating, or public bus not shown on map -- ignore
+				if (service.Status.Equals ("Not In Operation") || !PublicBusSvcOnMap.Contains(service.ServiceNo))
+					continue;
+
+				// add to list after adding service info to bus (for display purpose)
+				service.NextBus.ServiceNo = Regex.Replace (service.ServiceNo, @"[^\d]", String.Empty); // ignore alphabet in serviceno when displaying bus position
+				service.SubsequentBus.ServiceNo = Regex.Replace (service.ServiceNo, @"[^\d]", String.Empty);
+				service.SubsequentBus3.ServiceNo = Regex.Replace (service.ServiceNo, @"[^\d]", String.Empty);
+				service.NextBus.OriginatingID = service.OriginatingID;
+				service.SubsequentBus.OriginatingID = service.OriginatingID;
+				service.SubsequentBus3.OriginatingID = service.OriginatingID;
+				service.NextBus.TerminatingID = service.TerminatingID;
+				service.SubsequentBus.TerminatingID = service.TerminatingID;
+				service.SubsequentBus3.TerminatingID = service.TerminatingID;
+
+				publicBuses.Add (service.NextBus);
+				publicBuses.Add (service.SubsequentBus);
+				publicBuses.Add (service.SubsequentBus3);
+			}
+
+			return publicBuses;
 		}
 
 		// return true if current time between first bus and last bus timing
 		public static bool IsWithinServiceTiming(string routeName) {
 			TimeSpan currTimeSpan = DateTime.Now.TimeOfDay;
 			BusSvc svc = BusSvcs [routeName];
-			return currTimeSpan.CompareTo (TimeSpan.Parse (svc.firstBusTime[(int)Days.WEEKDAY])) > 0 &&
-			currTimeSpan.CompareTo (TimeSpan.Parse (svc.lastBusTime[(int)Days.WEEKDAY])) < 0;
+			return currTimeSpan.CompareTo (TimeSpan.Parse (svc.firstBusTime[GetPeriodOfDay()])) > 0 &&
+				currTimeSpan.CompareTo (TimeSpan.Parse (svc.lastBusTime[GetPeriodOfDay()])) < 0;
 		}
 
 		// return int of enum based on current day

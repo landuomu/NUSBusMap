@@ -52,9 +52,10 @@ namespace NUSBusMap
 
 			var section = new TableSection ();
 			// add each bus service switch and info button
-			foreach (string routeName in BusHelper.BusSvcs.Keys) {
-				section.Add(new SvcCell (routeName, onToggleSvc, onClickInfo));
-			}
+			foreach (string routeName in BusHelper.BusSvcs.Keys) 
+				section.Add(new SvcCell (routeName, OnToggleSvc, OnClickInfo));
+			foreach (string routeName in BusHelper.PublicBusSvcStops.Keys)
+				section.Add (new SvcCell (routeName, OnTogglePublicSvc, OnClickInfo));
 			root.Add (section);
 			view.Root = root;
 
@@ -63,13 +64,22 @@ namespace NUSBusMap
 			Content = view;
 		}
 
-		private void onToggleSvc (object sender, ToggledEventArgs e)
+		private void OnToggleSvc (object sender, ToggledEventArgs e)
 		{
 			// show/hide buses of routeName (sender.StyleId) on map
 			BusHelper.BusSvcs[((Switch)sender).StyleId].showOnMap = e.Value;
 		}
 
-		private async void onClickInfo (object sender, EventArgs e)
+		private void OnTogglePublicSvc (object sender, ToggledEventArgs e) 
+		{
+			// add/remove public bus svc from list to be shown on map
+			if (e.Value)
+				BusHelper.PublicBusSvcOnMap.Add (((Switch)sender).StyleId);
+			else
+				BusHelper.PublicBusSvcOnMap.Remove (((Switch)sender).StyleId);
+		}
+
+		private async void OnClickInfo (object sender, EventArgs e)
 		{
 			// open bus route info for routeName (sender.StyleId)
 			await Navigation.PushAsync (new SvcInfoPage (((Button)sender).StyleId));
