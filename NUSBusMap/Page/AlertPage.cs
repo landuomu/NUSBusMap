@@ -15,6 +15,7 @@ namespace NUSBusMap
 		public static ObservableCollection<BusStop> stops;
 		public static List<string> enabledSvcs;
 		public static List<string> enabledStops;
+		private const int NUMBER_OF_COLS = 6;
 
 
 		public class WrappedItemSelectionTemplate : ViewCell
@@ -79,34 +80,37 @@ namespace NUSBusMap
 				ColumnSpacing = 10,
 				RowSpacing = 10,
 				Padding = new Thickness (10),
-				RowDefinitions = { 
-					new RowDefinition { Height = new GridLength (3, GridUnitType.Star) },
-					new RowDefinition { Height = new GridLength (3, GridUnitType.Star) },
-					new RowDefinition { Height = new GridLength (3, GridUnitType.Star) }
-				},
-				ColumnDefinitions = {
-					new ColumnDefinition { Width = new GridLength (2, GridUnitType.Star) },
-					new ColumnDefinition { Width = new GridLength (2, GridUnitType.Star) },
-					new ColumnDefinition { Width = new GridLength (2, GridUnitType.Star) },
-					new ColumnDefinition { Width = new GridLength (2, GridUnitType.Star) },
-					new ColumnDefinition { Width = new GridLength (2, GridUnitType.Star) }
-				},
-				HorizontalOptions = LayoutOptions.Center,
+				RowDefinitions = {},
+				ColumnDefinitions = {},
+				HorizontalOptions = LayoutOptions.CenterAndExpand,
 				VerticalOptions = LayoutOptions.Center
 			};
 
-			// add button for each bus service
+			// add columns
+			double len = 10.0 / NUMBER_OF_COLS;
+			for (int i=0;i<NUMBER_OF_COLS;i++) 
+				grid.ColumnDefinitions.Add (new ColumnDefinition { Width = new GridLength (len, GridUnitType.Star) });
+
+			// add button for each bus service (incl public bus)
 			int idx = 0;
-			foreach (string routeName in BusHelper.BusSvcs.Keys) {
+			foreach (string routeName in BusHelper.BusSvcs.Keys.Union(BusHelper.PublicBusSvcStops.Keys)) {
+				// add row if needed
+				if (idx % NUMBER_OF_COLS == 0) 
+					grid.RowDefinitions.Add (new RowDefinition { Height = new GridLength (2, GridUnitType.Star) });
+
 				Button routeBtn = new Button {
 					Image = routeName + ".png",
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.Center,
 					StyleId = routeName,
-					Opacity = 0.3
+					Opacity = 0.3,
+					HeightRequest = 40,
+					WidthRequest = 40,
+					MinimumHeightRequest = 40,
+					MinimumWidthRequest = 40
 				};
 				routeBtn.Clicked += OnClickRoute;
-				grid.Children.Add (routeBtn, idx % 5, idx / 5);
+				grid.Children.Add (routeBtn, idx % NUMBER_OF_COLS, idx / NUMBER_OF_COLS);
 				idx++;
 			}
 
@@ -148,22 +152,25 @@ namespace NUSBusMap
 		private void OnClickRoute (object sender, EventArgs e)
 		{
 			var routeName = ((Button)sender).StyleId;
+			// take the correct list for public/nus bus
+			var busSvcStops = (Regex.IsMatch (routeName, @"^\d+$")) ? BusHelper.PublicBusSvcStops[routeName] : BusHelper.BusSvcs [routeName].stops;
 			if (((Button)sender).Opacity.Equals(0.3)) {
 				// activate bus service
 				// add all stops from bus service into list if list does not contains bus stop
 				((Button)sender).Opacity = 1;
 				enabledSvcs.Add (routeName);
-				foreach (string busStopCode in BusHelper.BusSvcs[routeName].stops) 
+				foreach (string busStopCode in busSvcStops) 
 					if (!stops.Contains(BusHelper.BusStops[busStopCode]))
 						stops.Add (BusHelper.BusStops[busStopCode]);
 			} else {
 				// deactivate bus service
 				// remove bus stop of bus service from list if no other enabled bus service shares the same bus stop
+				// incl public bus
 				((Button)sender).Opacity = 0.3;
 				enabledSvcs.Remove (routeName);
-				foreach (string busStopCode in BusHelper.BusSvcs[routeName].stops) {
+				foreach (string busStopCode in busSvcStops) {
 					var stop = BusHelper.BusStops [busStopCode];
-					var otherEnabledSvcsInStop = enabledSvcs.Intersect (stop.services).ToList();
+					var otherEnabledSvcsInStop = enabledSvcs.Intersect (stop.services.Union(stop.publicServices)).ToList();
 					if (otherEnabledSvcsInStop.Count == 0)
 						stops.Remove (stop);
 				}
@@ -174,19 +181,24 @@ namespace NUSBusMap
 		{
 			while (true) {
 				// check each stop and each svc that are enabled
+				// incl public bus
 				foreach (string busStopCode in enabledStops) {
 					foreach (string routeName in enabledSvcs) {
 						var stop = BusHelper.BusStops [busStopCode];
-						var svc = BusHelper.BusSvcs [routeName];
-						if (stop.services.Contains (routeName)) {
+						if (stop.services.Union(stop.publicServices).Contains (routeName)) {
 							// get arrival timing of svc in stop and display alert if below alert minutes
-							var arrivalTimingStr = BusHelper.GetArrivalTiming (busStopCode, routeName);
+							var arrivalTimingStr = (stop.services.Contains(routeName)) ? 
+													BusHelper.GetArrivalTiming (busStopCode, routeName) :
+													await BusHelper.GetPublicBusesArrivalTiming (busStopCode, routeName);
 							var nextTimingStr = Regex.Match (arrivalTimingStr, @"\d+").Value;
 							if (!nextTimingStr.Equals (String.Empty)) {
 								var nextTiming = Int32.Parse (nextTimingStr);
-								if (nextTiming <= SettingsVars.Variables ["ALERT_MINUTES"].value) {
-									DisplayAlert ("Bus Alert", routeName + " is arriving " + stop.name + " at " + nextTiming + " min.", "OK", "Cancel");
-								}
+								if (nextTiming == 0) 
+									await DisplayAlert ("Bus Alert", routeName + " is arriving " + stop.name + "!", "OK", "Cancel");
+								else if (nextTiming <= SettingsVars.Variables ["ALERT_MINUTES"].value) 
+									await DisplayAlert ("Bus Alert", routeName + " is arriving " + stop.name + " at " + nextTiming + " min.", "OK", "Cancel");
+							} else if (arrivalTimingStr.Contains("Arr")) {
+								await DisplayAlert ("Bus Alert", routeName + " is arriving " + stop.name + "!", "OK", "Cancel");
 							}
 						}
 					}

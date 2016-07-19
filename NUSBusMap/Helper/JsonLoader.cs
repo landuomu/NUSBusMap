@@ -17,6 +17,7 @@ namespace NUSBusMap
 		const string stopsFilename = "BusStops.json";
 		const string svcsFilename = "BusSvcs.json";
 		const string publicBusFilename = "PublicBusSvcBusStops.json";
+		const string publicBusStopsFilename = "PublicBusStopCodeName.json";
 
 		public static IStreamLoader Loader { get; set;}
 
@@ -41,18 +42,30 @@ namespace NUSBusMap
 			}
 		}
 
-		public static async Task<PublicBusStop> LoadPublicBusInfo(string busStopCode) {
-			// Create a HTTP request using the URL:
-			var uri = "http://datamall2.mytransport.sg/ltaodataservice/BusArrival?BusStopID=" + busStopCode + "&SST=True";
-			HttpClient client = new HttpClient ();
-			client.DefaultRequestHeaders.Add ("AccountKey", "r8s1r+KgQfKAVDqzWavckQ==");
-			client.DefaultRequestHeaders.Add ("UniqueUserID", "0b795a48-f4b5-4a43-b1f3-7f01289b8ffc");
-			client.DefaultRequestHeaders.Accept.Add (new MediaTypeWithQualityHeaderValue ("application/json"));
+		public static Dictionary<string,string> LoadPublicBusStops() 
+		{
+			using (var reader = new StreamReader(OpenData(publicBusStopsFilename))) {
+				return JsonConvert.DeserializeObject<Dictionary<string,string>>(reader.ReadToEnd());
+			}
+		}
 
-			// get json response and convert to PublicBusStop object
-			using (var response = await client.GetAsync(uri)) {
-				string data = await response.Content.ReadAsStringAsync();
-				return JsonConvert.DeserializeObject<PublicBusStop> (data);
+		public static async Task<PublicBusStop> LoadPublicBusInfo (string busStopCode, string busSvcNo = "")
+		{
+			// Create a HTTP request using the URL
+			// add bus service no if provided
+			var uri = (busSvcNo.Equals (String.Empty)) ? 
+						"http://datamall2.mytransport.sg/ltaodataservice/BusArrival?BusStopID=" + busStopCode + "&SST=True" : 
+						"http://datamall2.mytransport.sg/ltaodataservice/BusArrival?BusStopID=" + busStopCode + "&ServiceNo=" + busSvcNo + "&SST=True";
+			using (HttpClient client = new HttpClient ()) {
+				client.DefaultRequestHeaders.Add ("AccountKey", "r8s1r+KgQfKAVDqzWavckQ==");
+				client.DefaultRequestHeaders.Add ("UniqueUserID", "0b795a48-f4b5-4a43-b1f3-7f01289b8ffc");
+				client.DefaultRequestHeaders.Accept.Add (new MediaTypeWithQualityHeaderValue ("application/json"));
+
+				// get json response and convert to PublicBusStop object
+				using (var response = await client.GetAsync (uri)) {
+					string data = await response.Content.ReadAsStringAsync ();
+					return JsonConvert.DeserializeObject<PublicBusStop> (data);
+				}
 			}
 		}
 
