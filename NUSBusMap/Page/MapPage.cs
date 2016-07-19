@@ -140,8 +140,8 @@ namespace NUSBusMap
 								(bus.Latitude.HasValue && !bus.Latitude.Value.Equals(0)) && 
 								(bus.Longitude.HasValue && !bus.Longitude.Value.Equals(0)))) {
 
-						var description = "Start: " + bus.OriginatingID + "\n" +
-						                  "End: " + bus.TerminatingID + "\n";
+						var description = "Start: " + BusHelper.PublicBusStopCodeName[bus.OriginatingID] + "\n" +
+						                  "End: " + BusHelper.PublicBusStopCodeName[bus.TerminatingID] + "\n";
 						var pin = new Pin {
 							Type = PinType.Place,
 							Position = new Xamarin.Forms.Maps.Position (bus.Latitude.Value, bus.Longitude.Value),

@@ -18,6 +18,7 @@ namespace NUSBusMap
 		public static Dictionary<string,BusOnRoad> ActiveBuses;
 		public static Dictionary<string,List<string>> PublicBusSvcStops; // key - bus service no, value - list of bus stop code which bus service plies
 		public static List<string> PublicBusSvcOnMap; // list of public bus service no to be shown on map, toggled in svc page
+		public static Dictionary<string,string> PublicBusStopCodeName; // dictionary to map public bus stop code to bus stop name
 
 		// init dictionaries
 		public static void LoadBusData ()
@@ -26,6 +27,7 @@ namespace NUSBusMap
 			BusSvcs = JsonLoader.LoadSvcs();
 			PublicBusSvcStops = JsonLoader.LoadPublicBuses ();
 			PublicBusSvcOnMap = new List<string> ();
+			PublicBusStopCodeName = JsonLoader.LoadPublicBusStops ();
 			ActiveBuses = new Dictionary<string,BusOnRoad> ();
 		}
 
