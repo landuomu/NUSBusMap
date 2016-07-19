@@ -193,9 +193,12 @@ namespace NUSBusMap
 							var nextTimingStr = Regex.Match (arrivalTimingStr, @"\d+").Value;
 							if (!nextTimingStr.Equals (String.Empty)) {
 								var nextTiming = Int32.Parse (nextTimingStr);
-								if (nextTiming <= SettingsVars.Variables ["ALERT_MINUTES"].value) {
+								if (nextTiming == 0) 
+									await DisplayAlert ("Bus Alert", routeName + " is arriving " + stop.name + "!", "OK", "Cancel");
+								else if (nextTiming <= SettingsVars.Variables ["ALERT_MINUTES"].value) 
 									await DisplayAlert ("Bus Alert", routeName + " is arriving " + stop.name + " at " + nextTiming + " min.", "OK", "Cancel");
-								}
+							} else if (arrivalTimingStr.Contains("Arr")) {
+								await DisplayAlert ("Bus Alert", routeName + " is arriving " + stop.name + "!", "OK", "Cancel");
 							}
 						}
 					}
