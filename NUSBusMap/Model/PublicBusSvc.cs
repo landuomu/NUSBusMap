@@ -4,7 +4,8 @@ namespace NUSBusMap
 {
 	public class PublicBusSvc
 	{
-		public string ServiceNo { get; set; }
+		// model based on LTA DataMall API
+		public string ServiceNo { get; set; } // primary key
 		public string Status { get; set; }
 		public string Operator { get; set; }
 		public string OriginatingID { get; set; }

@@ -4,6 +4,7 @@ namespace NUSBusMap
 {
 	public class PublicBusOnRoad
 	{
+		// model based on LTA DataMall API
 		public DateTime? EstimatedArrival { get; set; }
 		public double? Latitude { get; set; }
 		public double? Longitude { get; set; }
@@ -17,6 +18,7 @@ namespace NUSBusMap
 		public string TerminatingID { get; set; }
 
 		// comparison method
+		// same bus: same service no, same originating/terminating id, almost same location (within offset)
 		public bool IsSameBus(PublicBusOnRoad bus, double offset) {
 			return (this.ServiceNo.Equals(bus.ServiceNo) && this.OriginatingID.Equals(bus.OriginatingID) && 
 				this.TerminatingID.Equals(bus.TerminatingID)) &&

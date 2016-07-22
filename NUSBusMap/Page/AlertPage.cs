@@ -132,13 +132,7 @@ namespace NUSBusMap
 			    ((ListView)sender).SelectedItem = null;
 			};
 
-			// create stack for all items
-//			var stack = new StackLayout { Spacing = 10, Margin = 10 };
-//			stack.Children.Add (gridHeader);
-//			stack.Children.Add (grid);
-//			stack.Children.Add (listHeader);
-//			stack.Children.Add (listView);
-
+			// create grid for all view items
 			var mainGrid = new Grid {
 				Margin = 10,
 				RowDefinitions = {

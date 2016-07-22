@@ -5,6 +5,7 @@ namespace NUSBusMap
 {
 	public class BusMap : Map
 	{
+		// add lists of custom pins in addition to xamarin map
 		public List<CustomPin> BusPins { get; set; }
 		public List<CustomPin> PublicBusPins { get; set; }
 		public List<CustomPin> StopPins { get; set; }
