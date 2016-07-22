@@ -57,8 +57,8 @@ namespace NUSBusMap
 						"http://datamall2.mytransport.sg/ltaodataservice/BusArrival?BusStopID=" + busStopCode + "&SST=True" : 
 						"http://datamall2.mytransport.sg/ltaodataservice/BusArrival?BusStopID=" + busStopCode + "&ServiceNo=" + busSvcNo + "&SST=True";
 			using (HttpClient client = new HttpClient ()) {
-				client.DefaultRequestHeaders.Add ("AccountKey", "r8s1r+KgQfKAVDqzWavckQ==");
-				client.DefaultRequestHeaders.Add ("UniqueUserID", "0b795a48-f4b5-4a43-b1f3-7f01289b8ffc");
+				client.DefaultRequestHeaders.Add ("AccountKey", Credentials.AccountKey);
+				client.DefaultRequestHeaders.Add ("UniqueUserID", Credentials.UniqueUserID);
 				client.DefaultRequestHeaders.Accept.Add (new MediaTypeWithQualityHeaderValue ("application/json"));
 
 				// get json response and convert to PublicBusStop object
