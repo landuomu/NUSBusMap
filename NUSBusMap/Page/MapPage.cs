@@ -29,17 +29,17 @@ namespace NUSBusMap
 	            };
 
 	        // slider to change radius from 0.1 - 0.9 km (for simulator testing, not needed for device testing)
-			var slider = new Slider (1, 9, 5);
-			slider.ValueChanged += (sender, e) => {
-			    var zoomLevel = e.NewValue; // between 1 and 9
-				currRadius = (MEAN_MAP_RADIUS * 2) - (zoomLevel/(MEAN_MAP_RADIUS * 20));
-			    CentraliseMap(map.VisibleRegion.Center);
-			};
+//			var slider = new Slider (1, 9, 5);
+//			slider.ValueChanged += (sender, e) => {
+//			    var zoomLevel = e.NewValue; // between 1 and 9
+//				currRadius = (MEAN_MAP_RADIUS * 2) - (zoomLevel/(MEAN_MAP_RADIUS * 20));
+//			    CentraliseMap(map.VisibleRegion.Center);
+//			};
 
 			// add map and slider to stack layout
 	        var stack = new StackLayout { Spacing = 0 };
 	        stack.Children.Add(map);
-			stack.Children.Add(slider);
+//			stack.Children.Add(slider);
 
 			Icon = "MapTabIcon.png";
 			Title = "Map";
