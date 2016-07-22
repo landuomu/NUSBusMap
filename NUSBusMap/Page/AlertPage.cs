@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -153,7 +152,7 @@ namespace NUSBusMap
 		{
 			var routeName = ((Button)sender).StyleId;
 			// take the correct list for public/nus bus
-			var busSvcStops = (Regex.IsMatch (routeName, @"^\d+$")) ? BusHelper.PublicBusSvcStops[routeName] : BusHelper.BusSvcs [routeName].stops;
+			var busSvcStops = (BusHelper.IsPublic(routeName)) ? BusHelper.PublicBusSvcStops[routeName] : BusHelper.BusSvcs [routeName].stops;
 			if (((Button)sender).Opacity.Equals(0.3)) {
 				// activate bus service
 				// add all stops from bus service into list if list does not contains bus stop

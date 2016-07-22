@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
@@ -104,7 +102,7 @@ namespace NUSBusMap
 					// remove buses which has finished plying
 					List<BusOnRoad> finishedBuses = BusHelper.ActiveBuses.Values.Where (bor => bor.finished).ToList ();
 					foreach (BusOnRoad bor in finishedBuses)
-						BusHelper.ActiveBuses.Remove (bor.vehiclePlate);
+						BusHelper.RemoveBusOnRoad (bor.vehiclePlate);
 				}
 
 				// continue after interval
@@ -191,8 +189,7 @@ namespace NUSBusMap
 
 						// get public bus arrival timing for bus stop (if public buses pass by)
 						// busStopCode with all digits -> public bus will pass by
-						Regex regex = new Regex(@"^\d+$");
-						if (regex.IsMatch(busStop.busStopCode))
+						if (BusHelper.IsPublic(busStop.busStopCode))
 							description += await BusHelper.GetPublicBusesArrivalTiming (busStop.busStopCode);
 							
 						var pin = new Pin {

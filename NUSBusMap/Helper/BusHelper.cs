@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace NUSBusMap
 {
@@ -11,24 +11,26 @@ namespace NUSBusMap
 	{
 		// enum for different kind of days for diff bus freq
 		public enum Days { WEEKDAY, SATURDAY, SUNDAY };
+		public enum Freqs { HIGH, MID, LOW };
 		private static double MARGIN_OF_ERROR = 10.0; // in m, max distance allowed between bus and stop to be considered reached stop
 
-		public static Dictionary<string,BusStop> BusStops;
-		public static Dictionary<string,BusSvc> BusSvcs;
-		public static Dictionary<string,BusOnRoad> ActiveBuses;
+		public static Dictionary<string,BusStop> BusStops; // key - bus stop code, value - BusStop object (refer to Model)
+		public static Dictionary<string,BusSvc> BusSvcs; // key - route name, value - BusSvc object (refer to Model)
+		public static Dictionary<string,BusOnRoad> ActiveBuses; // key - vehicle plate, value - BusOnRoad object (refer to Model)
 		public static Dictionary<string,List<string>> PublicBusSvcStops; // key - bus service no, value - list of bus stop code which bus service plies
-		public static List<string> PublicBusSvcOnMap; // list of public bus service no to be shown on map, toggled in svc page
 		public static Dictionary<string,string> PublicBusStopCodeName; // dictionary to map public bus stop code to bus stop name
+		public static List<string> PublicBusSvcOnMap; // list of public bus service no to be shown on map, toggled in svc page
 
-		// init dictionaries
+		// init dictionaries from json file
 		public static void LoadBusData ()
 		{
 			BusStops = JsonLoader.LoadStops();
 			BusSvcs = JsonLoader.LoadSvcs();
 			PublicBusSvcStops = JsonLoader.LoadPublicBuses ();
-			PublicBusSvcOnMap = new List<string> ();
 			PublicBusStopCodeName = JsonLoader.LoadPublicBusStops ();
+
 			ActiveBuses = new Dictionary<string,BusOnRoad> ();
+			PublicBusSvcOnMap = new List<string> ();
 		}
 
 		// add bus when bus starts to ply on road
@@ -59,6 +61,9 @@ namespace NUSBusMap
 				finished = false
 			};
 			ActiveBuses.Add (vehiclePlate, bor);
+
+			// start/restart timer dispatch
+			StartTimerDispatch (svc);
 		}
 
 		// remove bus when bus reaches last stop
@@ -89,18 +94,19 @@ namespace NUSBusMap
 					bor.stopCounter++;
 			}
 
-			// generate display string
-			return (time == 0) ? "Arr" : ( (time > 60) ? "--" : time + " min" );
+			// generate display string (give +- 1 allowance)
+			return (time == 0 || time == -1) ? "Arr" : ( (time > 60 || time < -1) ? "--" : time + " min" );
 		}
 
 		// return "arr" or "x min" or "not operating" of next and subsequent bus timing
 		// of each bus service serving the bus stop
 		// to show on bus stop
+		// for NUS buses
 		public static string GetArrivalTiming (string busStopCode, string routeName, string loop = "" /* optional, "BEFORE" or "AFTER" if repeatedService*/)
 		{
 			BusSvc svc = BusSvcs [routeName];
-			BusStop stop = BusStops [busStopCode];
 
+			// case not operating
 			if (!IsWithinServiceTiming (routeName))
 				return "not operating";
 
@@ -117,9 +123,10 @@ namespace NUSBusMap
 				if (busStopCode.Equals (bor.firstStop)) {
 					if (bor.stopCounter == 0 && svc.timerSinceLastDispatch != null) {
 						// get time by freq for the first stop (ignore negative)
-						var timeDiff = svc.freq [(int)Days.WEEKDAY] - (int)(svc.timerSinceLastDispatch.ElapsedMilliseconds / (1000 * 60));
+						var timeOfDay = GetTimeOfDay (routeName);
+						var timeDiff = svc.freq [timeOfDay] - (int)(svc.timerSinceLastDispatch.ElapsedMilliseconds / (1000 * 60));
 						if (timeDiff >= 0) nextTiming = timeDiff;
-						if (timeDiff + svc.freq [(int)Days.WEEKDAY] >= 0) subsequentTiming = timeDiff + svc.freq [(int)Days.WEEKDAY];
+						if (timeDiff + svc.freq [timeOfDay] >= 0) subsequentTiming = timeDiff + svc.freq [timeOfDay];
 					}
 				} else {
 					// get diff of distance travelled by bus and distance between stops for the service
@@ -240,12 +247,24 @@ namespace NUSBusMap
 		public static bool IsWithinServiceTiming(string routeName) {
 			TimeSpan currTimeSpan = DateTime.Now.TimeOfDay;
 			BusSvc svc = BusSvcs [routeName];
-			return currTimeSpan.CompareTo (TimeSpan.Parse (svc.firstBusTime[GetPeriodOfDay()])) > 0 &&
-				currTimeSpan.CompareTo (TimeSpan.Parse (svc.lastBusTime[GetPeriodOfDay()])) < 0;
+			int day = GetDayOfWeek ();
+
+			// case not operating throughout the day
+			if (svc.firstBusTime.Count <= day)
+				return false;
+
+			return currTimeSpan.CompareTo (TimeSpan.Parse (svc.firstBusTime[day])) > 0 &&
+				currTimeSpan.CompareTo (TimeSpan.Parse (svc.lastBusTime[day])) < 0;
+		}
+
+		// return true if bus stop code / bus service no is public
+		public static bool IsPublic(string name) {
+			Regex allDigits = new Regex(@"^\d+$");
+			return allDigits.IsMatch (name);
 		}
 
 		// return int of enum based on current day
-		public static int GetPeriodOfDay() {
+		private static int GetDayOfWeek() {
 			DateTime now = DateTime.Now;
 			if (now.DayOfWeek.Equals (DayOfWeek.Saturday))
 				return (int)Days.SATURDAY;
@@ -253,6 +272,60 @@ namespace NUSBusMap
 				return (int)Days.SUNDAY;
 			else
 				return (int)Days.WEEKDAY;
+		}
+
+		// return int of freqs enum based on time of day and bus service
+		public static int GetTimeOfDay(string routeName) {
+			// one freq case (express services)
+			if (BusHelper.BusSvcs [routeName].freq.Count == 1)
+				return (int)Freqs.HIGH;
+
+			DateTime now = DateTime.Now;
+			DayOfWeek day = now.DayOfWeek;
+			TimeSpan time = now.TimeOfDay;
+
+			// case A1/A2/D1/D2
+			if (routeName[0].Equals('A') || routeName[0].Equals('D')) {
+				if (day.Equals (DayOfWeek.Sunday) || (day.Equals (DayOfWeek.Saturday) && time > new TimeSpan (20, 0, 0)))
+					return (int)Freqs.LOW;
+
+				TimeSpan[] peakStarts = { new TimeSpan(8,0,0), new TimeSpan(12,0,0), new TimeSpan(17,0,0) };
+				TimeSpan[] peakEnds = { new TimeSpan(10,0,0), new TimeSpan(14,0,0), new TimeSpan(20,0,0) };
+				for (int i=0;i<peakStarts.Length;i++) 
+					if (time > peakStarts [i] && time < peakEnds [i])
+						return (int)Freqs.HIGH;
+
+				return (int)Freqs.MID;
+
+			} else if (routeName.Equals("BTC")) {
+				if (day.Equals (DayOfWeek.Saturday))
+					return (int)Freqs.LOW;
+
+				TimeSpan[] peakStarts = { new TimeSpan(7,20,0), new TimeSpan(12,0,0), new TimeSpan(17,0,0) };
+				TimeSpan[] peakEnds = { new TimeSpan(9,0,0), new TimeSpan(14,0,0), new TimeSpan(20,0,0) };
+				for (int i=0;i<peakStarts.Length;i++) 
+					if (time > peakStarts [i] && time < peakEnds [i])
+						return (int)Freqs.HIGH;
+
+				return (int)Freqs.MID;
+			} else {
+				// case B/C, only two freqs
+				return (day.Equals (DayOfWeek.Saturday) || time > new TimeSpan (19, 0, 0)) ? 
+						(int)Freqs.MID : (int)Freqs.HIGH;
+			}
+		}
+
+		// have a stopwatch to keep track of time since bus service last dispatched
+		// in order to estimate bus arrival timing for first stop
+		private static void StartTimerDispatch (BusSvc bs)
+		{
+			// init/reset stopwatch
+			if (bs.timerSinceLastDispatch == null) {
+				bs.timerSinceLastDispatch = new Stopwatch ();
+				bs.timerSinceLastDispatch.Start ();
+			} else {
+				bs.timerSinceLastDispatch.Restart ();
+			}
 		}
 	}
 }
