@@ -62,9 +62,14 @@ namespace NUSBusMap
 				client.DefaultRequestHeaders.Accept.Add (new MediaTypeWithQualityHeaderValue ("application/json"));
 
 				// get json response and convert to PublicBusStop object
-				using (var response = await client.GetAsync (uri)) {
-					string data = await response.Content.ReadAsStringAsync ();
-					return JsonConvert.DeserializeObject<PublicBusStop> (data);
+				try {
+					using (var response = await client.GetAsync (uri)) {
+						string data = await response.Content.ReadAsStringAsync ();
+						return JsonConvert.DeserializeObject<PublicBusStop> (data);
+					}
+				} catch (Exception e) {
+					// exception if no internet connection -- unable to get object
+					return null;
 				}
 			}
 		}

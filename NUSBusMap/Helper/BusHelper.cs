@@ -165,6 +165,11 @@ namespace NUSBusMap
 		{
 			string display = "";
 			PublicBusStop pbs = await JsonLoader.LoadPublicBusInfo (busStopCode);
+
+			// case unable to get data
+			if (pbs == null)
+				return "Public buses timing currently not available\n";
+
 			foreach (PublicBusSvc service in pbs.Services) {
 				display += service.ServiceNo + ": ";
 
@@ -203,6 +208,11 @@ namespace NUSBusMap
 		public static async Task<string> GetPublicBusesArrivalTiming (string busStopCode, string busSvcNo) 
 		{
 			PublicBusStop pbs = await JsonLoader.LoadPublicBusInfo (busStopCode, busSvcNo);
+
+			// case unable to get data
+			if (pbs == null)
+				return "Public buses timing currently not available\n";
+
 			PublicBusSvc service = pbs.Services [0];
 
 			// case not operating
@@ -218,6 +228,10 @@ namespace NUSBusMap
 		public static async Task<List<PublicBusOnRoad>> GetPublicBuses (string busStopCode) {
 			List<PublicBusOnRoad> publicBuses = new List<PublicBusOnRoad> ();
 			PublicBusStop pbs = await JsonLoader.LoadPublicBusInfo (busStopCode);
+
+			// case unable to get data
+			if (pbs == null)
+				return publicBuses;
 
 			foreach(PublicBusSvc service in pbs.Services) {
 				// case not operating, or public bus not shown on map -- ignore
