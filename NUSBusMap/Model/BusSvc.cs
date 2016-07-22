@@ -6,7 +6,7 @@ namespace NUSBusMap
 {
 	public class BusSvc
 	{
-		public string routeName { get; set; }
+		public string routeName { get; set; } // primary key
 		public List<string> firstBusTime { get; set; } // [weekday, sat, sun/ph] in "hh:mm" format
 		public List<string> lastBusTime { get; set; } // [weekday, sat, sun/ph] in "hh:mm" format
 		public List<int> freq { get; set; } // [high, mid, low] in mins
@@ -19,8 +19,8 @@ namespace NUSBusMap
 		public List<double> checkpoints { get; set; } // data of long,lat of points the route passes by, for bus simulation (testing) and route drawing (in future)
 
 		// not in json
-		public bool showOnMap { get; set; }
-		public Stopwatch timerSinceLastDispatch { get; set; }
+		public bool showOnMap { get; set; } // determine if bus service is shown on map
+		public Stopwatch timerSinceLastDispatch { get; set; } // start/restart when bus is dispatched to estimate next bus for first stop
 	}
 }
 

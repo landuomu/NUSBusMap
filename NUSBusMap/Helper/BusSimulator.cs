@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
-using Xamarin.Forms;
 
 namespace NUSBusMap
 {
@@ -51,24 +48,9 @@ namespace NUSBusMap
 		{
 			while (BusHelper.IsWithinServiceTiming (bs.routeName)) {
 				BusHelper.AddBusOnRoad (bs.routeName + "-" + BusHelper.ActiveBuses.Count, bs.routeName);
-				StartTimerDispatch (bs);
 
 				// dispatch again after freq
-				var currTimePeriod = BusHelper.GetPeriodOfDay ();
-				await Task.Delay (TimeSpan.FromMinutes (bs.freq [currTimePeriod]));
-			}
-		}
-
-		// have a stopwatch to keep track of time since bus service last dispatched
-		// in order to estimate bus arrival timing for first stop
-		private static void StartTimerDispatch (BusSvc bs)
-		{
-			// init/reset stopwatch
-			if (bs.timerSinceLastDispatch == null) {
-				bs.timerSinceLastDispatch = new Stopwatch ();
-				bs.timerSinceLastDispatch.Start ();
-			} else {
-				bs.timerSinceLastDispatch.Restart ();
+				await Task.Delay (TimeSpan.FromMinutes (bs.freq [BusHelper.GetTimeOfDay (bs.routeName)]));
 			}
 		}
 	}

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -77,9 +76,8 @@ namespace NUSBusMap
 
 			// create grid for bus services
 			var grid = new Grid {
-				ColumnSpacing = 10,
+				ColumnSpacing = 20,
 				RowSpacing = 10,
-				Padding = new Thickness (10),
 				RowDefinitions = {},
 				ColumnDefinitions = {},
 				HorizontalOptions = LayoutOptions.CenterAndExpand,
@@ -134,16 +132,29 @@ namespace NUSBusMap
 			    ((ListView)sender).SelectedItem = null;
 			};
 
-			// create stack for all items
-			var stack = new StackLayout { Spacing = 10, Margin = 10 };
-			stack.Children.Add (gridHeader);
-			stack.Children.Add (grid);
-			stack.Children.Add (listHeader);
-			stack.Children.Add (listView);
+			// create grid for all view items
+			var mainGrid = new Grid {
+				Margin = 10,
+				RowDefinitions = {
+					new RowDefinition { Height = new GridLength (1, GridUnitType.Star) },
+					new RowDefinition { Height = new GridLength (4, GridUnitType.Star) },
+					new RowDefinition { Height = new GridLength (1, GridUnitType.Star) },
+					new RowDefinition { Height = new GridLength (4, GridUnitType.Star) }
+				},
+				ColumnDefinitions = {
+					new ColumnDefinition { Width = new GridLength (10, GridUnitType.Star) }
+				},
+				HorizontalOptions = LayoutOptions.CenterAndExpand,
+				VerticalOptions = LayoutOptions.CenterAndExpand
+			};
+			mainGrid.Children.Add (gridHeader, 0, 0);
+			mainGrid.Children.Add (grid, 0, 1);
+			mainGrid.Children.Add (listHeader, 0, 2);
+			mainGrid.Children.Add (listView, 0, 3);
 
 			Icon = "AlertIcon.png";
 			Title = "Alerts";
-			Content = stack;
+			Content = mainGrid;
 
 			// check if need to display alert every interval
 			CheckAlertTiming ();
@@ -153,7 +164,7 @@ namespace NUSBusMap
 		{
 			var routeName = ((Button)sender).StyleId;
 			// take the correct list for public/nus bus
-			var busSvcStops = (Regex.IsMatch (routeName, @"^\d+$")) ? BusHelper.PublicBusSvcStops[routeName] : BusHelper.BusSvcs [routeName].stops;
+			var busSvcStops = (BusHelper.IsPublic(routeName)) ? BusHelper.PublicBusSvcStops[routeName] : BusHelper.BusSvcs [routeName].stops;
 			if (((Button)sender).Opacity.Equals(0.3)) {
 				// activate bus service
 				// add all stops from bus service into list if list does not contains bus stop

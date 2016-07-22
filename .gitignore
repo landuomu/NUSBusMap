@@ -7,6 +7,9 @@
 packages/
 TestResults/
 
+#private
+NUSBusMap/Private/
+
 # globs
 Makefile.in
 *.DS_Store

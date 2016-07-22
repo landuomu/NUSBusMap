@@ -9,6 +9,9 @@ namespace NUSBusMap
 	{
 		public PickerCell (SettingsVarObj obj, EventHandler onSelectedIndexChanged)
 		{
+			// structure: row to be shown on Settings page
+			// with display name of settings var and picker to edit var value
+
 			var grid = new Grid {
 			    ColumnSpacing = 0,
 			    RowSpacing = 0,
@@ -34,11 +37,13 @@ namespace NUSBusMap
                 VerticalOptions = LayoutOptions.CenterAndExpand,
                 HorizontalOptions = LayoutOptions.EndAndExpand
 			};
+
 			// add number of range into picker
 			for (int i = obj.min; i <= obj.max; i += obj.step)
 				variablePicker.Items.Add (i.ToString());
 			variablePicker.SelectedIndexChanged += onSelectedIndexChanged;
 
+			// add ui into grid
 			grid.Children.Add (variableName, 0, 0);
 			grid.Children.Add (variablePicker, 1, 0);
 			View = grid;

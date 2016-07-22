@@ -57,14 +57,19 @@ namespace NUSBusMap
 						"http://datamall2.mytransport.sg/ltaodataservice/BusArrival?BusStopID=" + busStopCode + "&SST=True" : 
 						"http://datamall2.mytransport.sg/ltaodataservice/BusArrival?BusStopID=" + busStopCode + "&ServiceNo=" + busSvcNo + "&SST=True";
 			using (HttpClient client = new HttpClient ()) {
-				client.DefaultRequestHeaders.Add ("AccountKey", "r8s1r+KgQfKAVDqzWavckQ==");
-				client.DefaultRequestHeaders.Add ("UniqueUserID", "0b795a48-f4b5-4a43-b1f3-7f01289b8ffc");
+				client.DefaultRequestHeaders.Add ("AccountKey", Credentials.AccountKey);
+				client.DefaultRequestHeaders.Add ("UniqueUserID", Credentials.UniqueUserID);
 				client.DefaultRequestHeaders.Accept.Add (new MediaTypeWithQualityHeaderValue ("application/json"));
 
 				// get json response and convert to PublicBusStop object
-				using (var response = await client.GetAsync (uri)) {
-					string data = await response.Content.ReadAsStringAsync ();
-					return JsonConvert.DeserializeObject<PublicBusStop> (data);
+				try {
+					using (var response = await client.GetAsync (uri)) {
+						string data = await response.Content.ReadAsStringAsync ();
+						return JsonConvert.DeserializeObject<PublicBusStop> (data);
+					}
+				} catch (Exception e) {
+					// exception if no internet connection -- unable to get object
+					return null;
 				}
 			}
 		}

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Maps;
@@ -20,26 +18,16 @@ namespace NUSBusMap
 	    public MapPage() {
 	    	// map with default centre at NUS
 			var NUSCentre = new Xamarin.Forms.Maps.Position (1.2966, 103.7764);
-	        map = new BusMap(
-				MapSpan.FromCenterAndRadius(NUSCentre, Distance.FromKilometers(MEAN_MAP_RADIUS))) {
-	                IsShowingUser = true,
-	                HeightRequest = 100,
-	                WidthRequest = 960,
-	                VerticalOptions = LayoutOptions.FillAndExpand
-	            };
-
-	        // slider to change radius from 0.1 - 0.9 km (for simulator testing, not needed for device testing)
-			var slider = new Slider (1, 9, 5);
-			slider.ValueChanged += (sender, e) => {
-			    var zoomLevel = e.NewValue; // between 1 and 9
-				currRadius = (MEAN_MAP_RADIUS * 2) - (zoomLevel/(MEAN_MAP_RADIUS * 20));
-			    CentraliseMap(map.VisibleRegion.Center);
+			map = new BusMap (MapSpan.FromCenterAndRadius (NUSCentre, Distance.FromKilometers (MEAN_MAP_RADIUS))) {
+				IsShowingUser = true,
+				HeightRequest = 100,
+				WidthRequest = 960,
+				VerticalOptions = LayoutOptions.FillAndExpand
 			};
 
 			// add map and slider to stack layout
 	        var stack = new StackLayout { Spacing = 0 };
 	        stack.Children.Add(map);
-			stack.Children.Add(slider);
 
 			Icon = "MapTabIcon.png";
 			Title = "Map";
@@ -60,6 +48,7 @@ namespace NUSBusMap
 				pos, Distance.FromKilometers (currRadius)));
 	    }
 
+	    // function to freeze map (called from iOS event)
 	    public static void SetFreezeMap (bool value) {
 			FreezeMap = value;
 	    }
@@ -104,7 +93,7 @@ namespace NUSBusMap
 					// remove buses which has finished plying
 					List<BusOnRoad> finishedBuses = BusHelper.ActiveBuses.Values.Where (bor => bor.finished).ToList ();
 					foreach (BusOnRoad bor in finishedBuses)
-						BusHelper.ActiveBuses.Remove (bor.vehiclePlate);
+						BusHelper.RemoveBusOnRoad (bor.vehiclePlate);
 				}
 
 				// continue after interval
@@ -191,8 +180,7 @@ namespace NUSBusMap
 
 						// get public bus arrival timing for bus stop (if public buses pass by)
 						// busStopCode with all digits -> public bus will pass by
-						Regex regex = new Regex(@"^\d+$");
-						if (regex.IsMatch(busStop.busStopCode))
+						if (BusHelper.IsPublic(busStop.busStopCode))
 							description += await BusHelper.GetPublicBusesArrivalTiming (busStop.busStopCode);
 							
 						var pin = new Pin {
