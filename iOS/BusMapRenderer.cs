@@ -64,7 +64,7 @@ namespace NUSBusMap.iOS
 			annotationView = mapView.DequeueReusableAnnotation (customPin.Id);
 			if (annotationView == null) {
 				annotationView = new MKAnnotationView (annotation, customPin.Id);
-				annotationView.Image = UIImage.FromFile (customPin.Url).Scale(new SizeF() { Height=20, Width=20 });
+				annotationView.Image = UIImage.FromFile (customPin.Url).Scale(new SizeF() { Height=23, Width=23 });
 			}
 			// hide default callout
 			annotationView.CanShowCallout = false;
