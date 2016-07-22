@@ -35,3 +35,5 @@ BusHelper.RemoveBusOnRoad("PC1221C");
 * Local/remote notifications for alerts
 * Display/post announcements for events e.g. bus service disruptions
 * Allow user to report a problem or post feedback
+
+Built by Lee Han Cheng and Joycelyn Ng
